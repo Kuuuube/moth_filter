@@ -1,4 +1,4 @@
-use std::fs::File;
+use std::{collections::HashMap, fs::File};
 
 use serde::Serialize;
 
@@ -43,6 +43,7 @@ fn main() {
 
     let mut bad_entry_count = 0;
     let mut moth_entries: Vec<SpeciesData> = Vec::new();
+    let mut moth_synonyms: HashMap<String, String> = HashMap::new();
 
     for tsv_reader_result in taxon_tsv {
         let Ok(taxon_tsv_data_raw) = tsv_reader_result else {
@@ -56,23 +57,19 @@ fn main() {
             // not a moth
             continue;
         }
-        let taxonomic_status = match taxon_tsv_data_raw.dwc_taxonomic_status {
-            TaxonomicStatusRaw::Accepted => TaxonomicStatus::Accepted,
-            TaxonomicStatusRaw::ProvisionallyAccepted => TaxonomicStatus::ProvisionallyAccepted,
-            TaxonomicStatusRaw::Synonym => {
-                TaxonomicStatus::Synonym(taxon_tsv_data_raw.dwc_accepted_name_usage_id)
-            }
-            TaxonomicStatusRaw::AmbiguousSynonym => {
-                TaxonomicStatus::Synonym(taxon_tsv_data_raw.dwc_accepted_name_usage_id)
-            }
+        match taxon_tsv_data_raw.dwc_taxonomic_status {
+            TaxonomicStatusRaw::Synonym | TaxonomicStatusRaw::AmbiguousSynonym => {
+                moth_synonyms.insert(taxon_tsv_data_raw.dwc_taxon_id, taxon_tsv_data_raw.dwc_accepted_name_usage_id);
+                continue;
+            },
             TaxonomicStatusRaw::Misapplied => {
                 continue;
             }
+            _ => ()
         };
 
         moth_entries.push(SpeciesData {
             catalogue_of_life_taxon_id: taxon_tsv_data_raw.dwc_taxon_id,
-            taxonomic_status: taxonomic_status,
             classification: ScientificClassification {
                 superfamily: taxon_tsv_data_raw.dwc_superfamily,
                 family: taxon_tsv_data_raw.dwc_family,
@@ -85,14 +82,13 @@ fn main() {
         });
     }
 
-    println!("Found {} moths", moth_entries.len());
+    println!("Found {} moths and {} synonym species", moth_entries.len(), moth_synonyms.len());
     println!("Failed to parse {bad_entry_count} entries");
 }
 
 #[derive(Debug, Serialize)]
 struct SpeciesData {
     catalogue_of_life_taxon_id: String,
-    taxonomic_status: TaxonomicStatus,
     classification: ScientificClassification,
 }
 
@@ -105,11 +101,4 @@ struct ScientificClassification {
     subtribe: String,
     genus: String,
     epithet: String,
-}
-
-#[derive(Debug, Serialize)]
-enum TaxonomicStatus {
-    Accepted,
-    ProvisionallyAccepted,
-    Synonym(String),
 }
