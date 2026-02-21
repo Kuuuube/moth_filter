@@ -1,6 +1,6 @@
-use std::fs::File;
+use std::{collections::HashSet, fs::File};
 
-use serde::Deserialize;
+use serde::{Deserialize, Serialize};
 
 const MOTH_ORDER: &str = "Lepidoptera";
 const BUTTERFLY_SUPERFAMILY: &str = "Papilionoidea";
@@ -53,7 +53,7 @@ struct TaxonTSVRaw {
     #[serde(rename = "dwc:datasetID")]
     dwc_dataset_id: String,
     #[serde(rename = "dwc:taxonomicStatus")]
-    dwc_taxonomic_status: String,
+    dwc_taxonomic_status: TaxonomicStatusRaw,
     #[serde(rename = "dwc:taxonRank")]
     dwc_taxon_rank: String,
     #[serde(rename = "dwc:scientificName")]
@@ -110,12 +110,28 @@ struct TaxonTSVRaw {
     clb_merged: String,
 }
 
+#[derive(Debug, Deserialize)]
+enum TaxonomicStatusRaw {
+    #[serde(rename = "accepted")]
+    Accepted,
+    #[serde(rename = "provisionally accepted")]
+    ProvisionallyAccepted,
+    #[serde(rename = "synonym")]
+    Synonym,
+    #[serde(rename = "ambiguous synonym")]
+    AmbiguousSynonym,
+    #[serde(rename = "misapplied")]
+    Misapplied,
+}
+
+#[derive(Debug, Serialize)]
 struct SpeciesData {
-    col_taxon_id: String,
-    taxonomic_status: String,
+    catalogue_of_life_taxon_id: String,
+    taxonomic_status: TaxonomicStatus,
     classification: ScientificClassification,
 }
 
+#[derive(Debug, Serialize)]
 struct ScientificClassification {
     superfamily: String,
     family: String,
@@ -124,4 +140,11 @@ struct ScientificClassification {
     subtribe: String,
     genus: String,
     epithet: String,
+}
+
+#[derive(Debug, Serialize)]
+enum TaxonomicStatus {
+    Accepted,
+    ProvisionallyAccepted,
+    Synonym(String),
 }
