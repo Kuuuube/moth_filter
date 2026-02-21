@@ -22,6 +22,7 @@ fn main() {
                     || taxon_tsv_data_raw.dwc_order != MOTH_ORDER
                     || taxon_tsv_data_raw.dwc_superfamily == BUTTERFLY_SUPERFAMILY
                 {
+                    // not a moth
                     continue;
                 }
             }
