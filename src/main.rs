@@ -35,20 +35,16 @@ fn main() {
     let mut bad_entry_count = 0;
 
     for tsv_reader_result in taxon_tsv {
-        match tsv_reader_result {
-            Ok(taxon_tsv_data_raw) => {
-                if taxon_tsv_data_raw.dwc_taxon_rank != "species"
-                    || taxon_tsv_data_raw.dwc_order != MOTH_ORDER
-                    || taxon_tsv_data_raw.dwc_superfamily == BUTTERFLY_SUPERFAMILY
-                {
-                    // not a moth
-                    continue;
-                }
-            }
-            Err(_err) => {
-                bad_entry_count += 1;
-                continue;
-            }
+        let Ok(taxon_tsv_data_raw) = tsv_reader_result else {
+            bad_entry_count += 1;
+            continue;
+        };
+        if taxon_tsv_data_raw.dwc_taxon_rank != "species"
+            || taxon_tsv_data_raw.dwc_order != MOTH_ORDER
+            || taxon_tsv_data_raw.dwc_superfamily == BUTTERFLY_SUPERFAMILY
+        {
+            // not a moth
+            continue;
         }
         moth_entry_count += 1;
     }
