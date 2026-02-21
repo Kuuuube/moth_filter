@@ -30,8 +30,8 @@ fn main() {
         moth_entry_count += 1;
     }
 
-    dbg!(moth_entry_count);
-    dbg!(bad_entry_count);
+    println!("Found {moth_entry_count} moths");
+    println!("Failed to parse {bad_entry_count} entries");
 }
 
 #[derive(Debug, Deserialize)]
