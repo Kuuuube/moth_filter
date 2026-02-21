@@ -41,6 +41,9 @@ fn main() {
         distribution_tsv_reader.deserialize::<DistributionTSVRaw>(),
     );
 
+    let output_file_path = "./output/moth_data.json";
+    let output_file = File::create(output_file_path).unwrap();
+
     let mut bad_entry_count = 0;
     let mut moth_entries: Vec<SpeciesData> = Vec::new();
     let mut moth_synonyms: HashMap<String, String> = HashMap::new();
@@ -84,6 +87,11 @@ fn main() {
 
     println!("Found {} moths and {} synonym species", moth_entries.len(), moth_synonyms.len());
     println!("Failed to parse {bad_entry_count} entries");
+    println!("Writing output to {}", output_file_path);
+    if let Err(write_error) = serde_json::to_writer(output_file, &moth_entries) {
+        dbg!(write_error);
+    };
+}
 }
 
 #[derive(Debug, Serialize)]
