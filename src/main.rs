@@ -9,6 +9,7 @@ fn main() {
     let taxon_tsv_file = File::open("./data/Taxon.tsv").unwrap();
     let mut tsv_reader = csv::ReaderBuilder::new()
         .delimiter(b'\t')
+        .quoting(false)
         .from_reader(taxon_tsv_file);
 
     let mut moth_entry_count = 0;
