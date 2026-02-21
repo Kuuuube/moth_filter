@@ -2,9 +2,6 @@ use std::{collections::HashMap, fs::File};
 
 use crate::tsv_structs::*;
 
-// Yes, these all do the exact same thing
-// No, it is not worth making these generics or enum
-
 pub fn vernacular_to_hashmap(
     tsv_iter: csv::DeserializeRecordsIter<'_, File, VernacularNameTSVRaw>,
 ) -> HashMap<String, VernacularNameTSVRaw> {
@@ -13,6 +10,10 @@ pub fn vernacular_to_hashmap(
         let Ok(ok) = tsv_reader_result else {
             continue;
         };
+        // currently only accept english names
+        if ok.dcterms_language != "eng" {
+            continue;
+        }
         hashmap.insert(ok.dwc_taxon_id.clone(), ok);
     }
     return hashmap;
