@@ -41,8 +41,8 @@ fn main() {
         distribution_tsv_reader.deserialize::<DistributionTSVRaw>(),
     );
 
-    let mut moth_entry_count = 0;
     let mut bad_entry_count = 0;
+    let mut moth_entries: Vec<SpeciesData> = Vec::new();
 
     for tsv_reader_result in taxon_tsv {
         let Ok(taxon_tsv_data_raw) = tsv_reader_result else {
@@ -56,10 +56,36 @@ fn main() {
             // not a moth
             continue;
         }
-        moth_entry_count += 1;
+        let taxonomic_status = match taxon_tsv_data_raw.dwc_taxonomic_status {
+            TaxonomicStatusRaw::Accepted => TaxonomicStatus::Accepted,
+            TaxonomicStatusRaw::ProvisionallyAccepted => TaxonomicStatus::ProvisionallyAccepted,
+            TaxonomicStatusRaw::Synonym => {
+                TaxonomicStatus::Synonym(taxon_tsv_data_raw.dwc_accepted_name_usage_id)
+            }
+            TaxonomicStatusRaw::AmbiguousSynonym => {
+                TaxonomicStatus::Synonym(taxon_tsv_data_raw.dwc_accepted_name_usage_id)
+            }
+            TaxonomicStatusRaw::Misapplied => {
+                continue;
+            }
+        };
+
+        moth_entries.push(SpeciesData {
+            catalogue_of_life_taxon_id: taxon_tsv_data_raw.dwc_taxon_id,
+            taxonomic_status: taxonomic_status,
+            classification: ScientificClassification {
+                superfamily: taxon_tsv_data_raw.dwc_superfamily,
+                family: taxon_tsv_data_raw.dwc_family,
+                subfamily: taxon_tsv_data_raw.dwc_subfamily,
+                tribe: taxon_tsv_data_raw.dwc_tribe,
+                subtribe: taxon_tsv_data_raw.dwc_subtribe,
+                genus: taxon_tsv_data_raw.dwc_genus,
+                epithet: taxon_tsv_data_raw.dwc_specific_epithet,
+            },
+        });
     }
 
-    println!("Found {moth_entry_count} moths");
+    println!("Found {} moths", moth_entries.len());
     println!("Failed to parse {bad_entry_count} entries");
 }
 
