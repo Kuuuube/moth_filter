@@ -1,116 +1,108 @@
-use std::{
-    fs::File,
-    io::{BufRead, BufReader, Write},
-};
+use std::fs::File;
+
+use serde::Deserialize;
 
 const MOTH_ORDER: &str = "Lepidoptera";
 const BUTTERFLY_SUPERFAMILY: &str = "Papilionoidea";
 
 fn main() {
     let taxon_tsv_file = File::open("./data/Taxon.tsv").unwrap();
+    let mut tsv_reader = csv::ReaderBuilder::new()
+        .delimiter(b'\t')
+        .from_reader(taxon_tsv_file);
 
-    for taxon_tsv_raw_data in TaxonTSV::new(taxon_tsv_file) {
-        if taxon_tsv_raw_data.dwc_taxon_rank != "species"
-            || taxon_tsv_raw_data.dwc_order != MOTH_ORDER
-            || taxon_tsv_raw_data.dwc_superfamily == BUTTERFLY_SUPERFAMILY
-        {
+    let mut moth_entry_count = 0;
+    let mut bad_entry_count = 0;
+
+    for tsv_reader_result in tsv_reader.deserialize::<TaxonTSVRaw>() {
+        if let Ok(taxon_tsv_data_raw) = tsv_reader_result {
+            if taxon_tsv_data_raw.dwc_taxon_rank != "species"
+                || taxon_tsv_data_raw.dwc_order != MOTH_ORDER
+                || taxon_tsv_data_raw.dwc_superfamily == BUTTERFLY_SUPERFAMILY
+            {
+                continue;
+            }
+        } else {
+            bad_entry_count += 1;
             continue;
         }
+        moth_entry_count += 1;
     }
+
+    dbg!(moth_entry_count);
+    dbg!(bad_entry_count);
 }
 
-struct TaxonTSV {
-    tsv_lines: std::io::Lines<BufReader<File>>,
-}
-
-impl TaxonTSV {
-    fn new(file: File) -> Self {
-        TaxonTSV {
-            tsv_lines: BufReader::new(file).lines(),
-        }
-    }
-}
-
-impl Iterator for TaxonTSV {
-    type Item = TaxonTSVRaw;
-
-    fn next(&mut self) -> Option<Self::Item> {
-        let tsv_line = self.tsv_lines.next()?.ok()?;
-        let split_tsv_line: Vec<_> = tsv_line.split("\t").collect();
-        Some(TaxonTSVRaw {
-            dwc_taxon_id: split_tsv_line.get(0)?.to_string(),
-            dwc_parent_name_usage_id: split_tsv_line.get(1)?.to_string(),
-            dwc_accepted_name_usage_id: split_tsv_line.get(2)?.to_string(),
-            dwc_original_name_usage_id: split_tsv_line.get(3)?.to_string(),
-            dwc_scientific_name_id: split_tsv_line.get(4)?.to_string(),
-            dwc_dataset_id: split_tsv_line.get(5)?.to_string(),
-            dwc_taxonomic_status: split_tsv_line.get(6)?.to_string(),
-            dwc_taxon_rank: split_tsv_line.get(7)?.to_string(),
-            dwc_scientific_name: split_tsv_line.get(8)?.to_string(),
-            dwc_scientific_name_authorship: split_tsv_line.get(9)?.to_string(),
-            col_notho: split_tsv_line.get(10)?.to_string(),
-            dwc_generic_name: split_tsv_line.get(11)?.to_string(),
-            dwc_infrageneric_epithet: split_tsv_line.get(12)?.to_string(),
-            dwc_specific_epithet: split_tsv_line.get(13)?.to_string(),
-            dwc_infraspecific_epithet: split_tsv_line.get(14)?.to_string(),
-            dwc_cultivar_epithet: split_tsv_line.get(15)?.to_string(),
-            dwc_name_according_to: split_tsv_line.get(16)?.to_string(),
-            dwc_name_published_in: split_tsv_line.get(17)?.to_string(),
-            dwc_nomenclatural_code: split_tsv_line.get(18)?.to_string(),
-            dwc_nomenclatural_status: split_tsv_line.get(19)?.to_string(),
-            dwc_kingdom: split_tsv_line.get(20)?.to_string(),
-            dwc_phylum: split_tsv_line.get(21)?.to_string(),
-            dwc_class: split_tsv_line.get(22)?.to_string(),
-            dwc_order: split_tsv_line.get(23)?.to_string(),
-            dwc_superfamily: split_tsv_line.get(24)?.to_string(),
-            dwc_family: split_tsv_line.get(25)?.to_string(),
-            dwc_subfamily: split_tsv_line.get(26)?.to_string(),
-            dwc_tribe: split_tsv_line.get(27)?.to_string(),
-            dwc_subtribe: split_tsv_line.get(28)?.to_string(),
-            dwc_genus: split_tsv_line.get(29)?.to_string(),
-            dwc_subgenus: split_tsv_line.get(30)?.to_string(),
-            dwc_taxon_remarks: split_tsv_line.get(31)?.to_string(),
-            dcterms_references: split_tsv_line.get(32)?.to_string(),
-            clb_merged: split_tsv_line.get(33)?.to_string(),
-        })
-    }
-}
-
+#[derive(Debug, Deserialize)]
 #[allow(unused)]
 struct TaxonTSVRaw {
+    #[serde(rename = "dwc:taxonID")]
     dwc_taxon_id: String,
+    #[serde(rename = "dwc:parentNameUsageID")]
     dwc_parent_name_usage_id: String,
+    #[serde(rename = "dwc:acceptedNameUsageID")]
     dwc_accepted_name_usage_id: String,
+    #[serde(rename = "dwc:originalNameUsageID")]
     dwc_original_name_usage_id: String,
+    #[serde(rename = "dwc:scientificNameID")]
     dwc_scientific_name_id: String,
+    #[serde(rename = "dwc:datasetID")]
     dwc_dataset_id: String,
+    #[serde(rename = "dwc:taxonomicStatus")]
     dwc_taxonomic_status: String,
+    #[serde(rename = "dwc:taxonRank")]
     dwc_taxon_rank: String,
+    #[serde(rename = "dwc:scientificName")]
     dwc_scientific_name: String,
+    #[serde(rename = "dwc:scientificNameAuthorship")]
     dwc_scientific_name_authorship: String,
+    #[serde(rename = "col:notho")]
     col_notho: String,
+    #[serde(rename = "dwc:genericName")]
     dwc_generic_name: String,
+    #[serde(rename = "dwc:infragenericEpithet")]
     dwc_infrageneric_epithet: String,
+    #[serde(rename = "dwc:specificEpithet")]
     dwc_specific_epithet: String,
+    #[serde(rename = "dwc:infraspecificEpithet")]
     dwc_infraspecific_epithet: String,
+    #[serde(rename = "dwc:cultivarEpithet")]
     dwc_cultivar_epithet: String,
+    #[serde(rename = "dwc:nameAccordingTo")]
     dwc_name_according_to: String,
+    #[serde(rename = "dwc:namePublishedIn")]
     dwc_name_published_in: String,
+    #[serde(rename = "dwc:nomenclaturalCode")]
     dwc_nomenclatural_code: String,
+    #[serde(rename = "dwc:nomenclaturalStatus")]
     dwc_nomenclatural_status: String,
+    #[serde(rename = "dwc:kingdom")]
     dwc_kingdom: String,
+    #[serde(rename = "dwc:phylum")]
     dwc_phylum: String,
+    #[serde(rename = "dwc:class")]
     dwc_class: String,
+    #[serde(rename = "dwc:order")]
     dwc_order: String,
+    #[serde(rename = "dwc:superfamily")]
     dwc_superfamily: String,
+    #[serde(rename = "dwc:family")]
     dwc_family: String,
+    #[serde(rename = "dwc:subfamily")]
     dwc_subfamily: String,
+    #[serde(rename = "dwc:tribe")]
     dwc_tribe: String,
+    #[serde(rename = "dwc:subtribe")]
     dwc_subtribe: String,
+    #[serde(rename = "dwc:genus")]
     dwc_genus: String,
+    #[serde(rename = "dwc:subgenus")]
     dwc_subgenus: String,
+    #[serde(rename = "dwc:taxonRemarks")]
     dwc_taxon_remarks: String,
+    #[serde(rename = "dcterms:references")]
     dcterms_references: String,
+    #[serde(rename = "clb:merged")]
     clb_merged: String,
 }
 
