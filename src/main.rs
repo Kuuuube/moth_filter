@@ -74,13 +74,13 @@ fn main() {
         moth_entries.push(SpeciesData {
             catalogue_of_life_taxon_id: taxon_tsv_data_raw.dwc_taxon_id,
             classification: ScientificClassification {
-                superfamily: taxon_tsv_data_raw.dwc_superfamily,
-                family: taxon_tsv_data_raw.dwc_family,
-                subfamily: taxon_tsv_data_raw.dwc_subfamily,
-                tribe: taxon_tsv_data_raw.dwc_tribe,
-                subtribe: taxon_tsv_data_raw.dwc_subtribe,
-                genus: taxon_tsv_data_raw.dwc_genus,
-                epithet: taxon_tsv_data_raw.dwc_specific_epithet,
+                superfamily: string_to_option(taxon_tsv_data_raw.dwc_superfamily),
+                family: string_to_option(taxon_tsv_data_raw.dwc_family),
+                subfamily: string_to_option(taxon_tsv_data_raw.dwc_subfamily),
+                tribe: string_to_option(taxon_tsv_data_raw.dwc_tribe),
+                subtribe: string_to_option(taxon_tsv_data_raw.dwc_subtribe),
+                genus: string_to_option(taxon_tsv_data_raw.dwc_genus),
+                epithet: string_to_option(taxon_tsv_data_raw.dwc_specific_epithet),
             },
         });
     }
@@ -92,6 +92,12 @@ fn main() {
         dbg!(write_error);
     };
 }
+
+fn string_to_option(input: String) -> Option<String> {
+    if input.len() == 0 {
+        return None;
+    }
+    return Some(input);
 }
 
 #[derive(Debug, Serialize)]
@@ -102,11 +108,12 @@ struct SpeciesData {
 
 #[derive(Debug, Serialize)]
 struct ScientificClassification {
-    superfamily: String,
-    family: String,
-    subfamily: String,
-    tribe: String,
-    subtribe: String,
-    genus: String,
-    epithet: String,
+    // somehow any of these (even genus and epithet) can be empty for a species
+    superfamily: Option<String>,
+    family: Option<String>,
+    subfamily: Option<String>,
+    tribe: Option<String>,
+    subtribe: Option<String>,
+    genus: Option<String>,
+    epithet: Option<String>,
 }
