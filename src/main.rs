@@ -10,16 +10,31 @@ const MOTH_ORDER: &str = "Lepidoptera";
 const BUTTERFLY_SUPERFAMILY: &str = "Papilionoidea";
 
 fn main() {
-    let taxon_tsv_file = File::open("./data/Taxon.tsv").unwrap();
-    let mut tsv_reader = csv::ReaderBuilder::new()
+    let mut taxon_tsv_reader = csv::ReaderBuilder::new()
         .delimiter(b'\t')
         .quoting(false)
-        .from_reader(taxon_tsv_file);
+        .from_reader(File::open("./data/Taxon.tsv").unwrap());
+    let taxon_tsv = taxon_tsv_reader.deserialize::<TaxonTSVRaw>();
+    let mut vernacular_tsv_reader = csv::ReaderBuilder::new()
+        .delimiter(b'\t')
+        .quoting(false)
+        .from_reader(File::open("./data/VernacularName.tsv").unwrap());
+    let vernacular_tsv = vernacular_tsv_reader.deserialize::<VernacularNameTSVRaw>();
+    let mut species_profile_tsv_reader = csv::ReaderBuilder::new()
+        .delimiter(b'\t')
+        .quoting(false)
+        .from_reader(File::open("./data/SpeciesProfile.tsv").unwrap());
+    let species_profile_tsv = species_profile_tsv_reader.deserialize::<SpeciesProfileTSVRaw>();
+    let mut distribution_tsv_reader = csv::ReaderBuilder::new()
+        .delimiter(b'\t')
+        .quoting(false)
+        .from_reader(File::open("./data/Distribution.tsv").unwrap());
+    let distribution_tsv = distribution_tsv_reader.deserialize::<DistributionTSVRaw>();
 
     let mut moth_entry_count = 0;
     let mut bad_entry_count = 0;
 
-    for tsv_reader_result in taxon_tsv.deserialize::<TaxonTSVRaw>() {
+    for tsv_reader_result in taxon_tsv {
         match tsv_reader_result {
             Ok(taxon_tsv_data_raw) => {
                 if taxon_tsv_data_raw.dwc_taxon_rank != "species"
