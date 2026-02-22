@@ -83,6 +83,8 @@ fn main() {
             .and_then(|x| {
                 Some(SpeciesProfile {
                     extinct: x.gbif_is_extinct,
+                    freshwater: x.gbif_is_freshwater,
+                    marine: x.gbif_is_marine,
                 })
             });
 
@@ -133,7 +135,13 @@ struct SpeciesData {
 
 #[derive(Debug, Serialize)]
 struct SpeciesProfile {
+    #[serde(skip_serializing_if = "Option::is_none")]
     extinct: Option<bool>,
+    // yep, aquatic moths are a thing though this database doesn't have many of them identified
+    #[serde(skip_serializing_if = "Option::is_none")]
+    freshwater: Option<bool>,
+    #[serde(skip_serializing_if = "Option::is_none")]
+    marine: Option<bool>,
 }
 
 #[derive(Debug, Serialize)]
