@@ -1,4 +1,8 @@
-use std::{collections::{HashMap, HashSet}, fs::File, time::Instant};
+use std::{
+    collections::{HashMap, HashSet},
+    fs::File,
+    time::Instant,
+};
 
 use serde::Serialize;
 
@@ -62,7 +66,12 @@ fn main() {
             TaxonomicStatusRaw::Synonym | TaxonomicStatusRaw::AmbiguousSynonym => {
                 let primary_taxon_id = taxon_tsv_data_raw.dwc_accepted_name_usage_id;
                 let synonym_taxon_id = taxon_tsv_data_raw.dwc_taxon_id;
-                synonyms.entry(primary_taxon_id).and_modify(|x| { x.insert(synonym_taxon_id.clone()); }).or_insert(HashSet::from([synonym_taxon_id]));
+                synonyms
+                    .entry(primary_taxon_id)
+                    .and_modify(|x| {
+                        x.insert(synonym_taxon_id.clone());
+                    })
+                    .or_insert(HashSet::from([synonym_taxon_id]));
                 continue;
             }
             TaxonomicStatusRaw::Misapplied => {
@@ -155,7 +164,11 @@ fn main() {
         });
     }
 
-    let moth_synonyms_count: usize = synonyms.iter().filter(|x| moth_ids.contains(x.0)).map(|x| x.1.len()).sum();
+    let moth_synonyms_count: usize = synonyms
+        .iter()
+        .filter(|x| moth_ids.contains(x.0))
+        .map(|x| x.1.len())
+        .sum();
 
     println!(
         "Found {} moths and {} synonym species",
