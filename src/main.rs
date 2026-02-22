@@ -78,6 +78,13 @@ fn main() {
             language_code: "eng".to_string(),
             taxon_id: taxon_tsv_data_raw.dwc_taxon_id.clone(),
         });
+        let species_profile = species_profile_tsv
+            .get(&taxon_tsv_data_raw.dwc_taxon_id)
+            .and_then(|x| {
+                Some(SpeciesProfile {
+                    extinct: x.gbif_is_extinct,
+                })
+            });
 
         moth_entries.push(SpeciesData {
             catalogue_of_life_taxon_id: taxon_tsv_data_raw.dwc_taxon_id,
@@ -91,6 +98,7 @@ fn main() {
                 epithet: string_to_option(taxon_tsv_data_raw.dwc_specific_epithet),
             },
             common_name: common_name.cloned(),
+            species_profile: species_profile,
         });
     }
 
@@ -119,6 +127,13 @@ struct SpeciesData {
     classification: ScientificClassification,
     #[serde(skip_serializing_if = "Option::is_none")]
     common_name: Option<String>,
+    #[serde(skip_serializing_if = "Option::is_none")]
+    species_profile: Option<SpeciesProfile>,
+}
+
+#[derive(Debug, Serialize)]
+struct SpeciesProfile {
+    extinct: Option<bool>,
 }
 
 #[derive(Debug, Serialize)]
