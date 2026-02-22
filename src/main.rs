@@ -1,4 +1,4 @@
-use std::{collections::HashMap, fs::File};
+use std::{collections::HashMap, fs::File, time::Instant};
 
 use serde::Serialize;
 
@@ -11,6 +11,8 @@ const MOTH_ORDER: &str = "Lepidoptera";
 const BUTTERFLY_SUPERFAMILY: &str = "Papilionoidea";
 
 fn main() {
+    let start_time = Instant::now();
+
     let mut taxon_tsv_reader = csv::ReaderBuilder::new()
         .delimiter(b'\t')
         .quoting(false)
@@ -131,6 +133,8 @@ fn main() {
         moth_synonyms.len()
     );
     println!("Failed to parse {bad_entry_count} entries");
+    println!("Parsed in: {:.6?}", start_time.elapsed());
+
     println!("Writing output to {}", output_file_path);
     if let Err(write_error) = serde_json::to_writer_pretty(output_file, &moth_entries) {
         dbg!(write_error);
