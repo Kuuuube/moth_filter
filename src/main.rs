@@ -1,6 +1,8 @@
 use std::{
     collections::{HashMap, HashSet},
+    error::Error,
     fs::File,
+    io::{Read, Write},
     time::Instant,
 };
 
@@ -48,7 +50,10 @@ fn main() {
     );
 
     let output_file_path = "./output/moth_data.json";
+    let output_file_path_zstd = output_file_path.to_owned() + ".zst";
+
     let output_file = File::create(output_file_path).unwrap();
+    let output_file_zstd = File::create(&output_file_path_zstd).unwrap();
 
     let mut bad_entry_count = 0;
     let mut moth_entries: Vec<SpeciesData> = Vec::new();
@@ -204,6 +209,21 @@ fn main() {
     if let Err(write_error) = serde_json::to_writer_pretty(output_file, &moth_entries) {
         dbg!(write_error);
     };
+    println!("Writing compressed output to {}", output_file_path_zstd);
+    if let Err(err) = write_zstd(output_file_path, &output_file_zstd) {
+        eprintln!("{err}");
+    };
+}
+
+fn write_zstd(input_file_path: &str, mut output_file: &File) -> Result<(), Box<dyn Error>> {
+    let mut compression_target_data = Vec::new();
+    File::open(input_file_path)?.read_to_end(&mut compression_target_data)?;
+
+    let max_compression_level = *zstd::compression_level_range().end();
+    let mut compressor = zstd::bulk::Compressor::new(max_compression_level)?;
+    output_file.write(&compressor.compress(&compression_target_data)?)?;
+
+    return Ok(());
 }
 
 #[derive(Debug, Serialize)]
