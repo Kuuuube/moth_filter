@@ -135,7 +135,7 @@ pub struct DistributionTSVRaw {
     #[serde(rename = "dwc:locationID")]
     pub dwc_location_id: String,
     #[serde(rename = "dwc:locality")]
-    pub dwc_locality: String,
+    pub dwc_locality: Option<String>,
     #[serde(rename = "dwc:countryCode")]
     pub dwc_country_code: String,
     #[serde(rename = "dcterms:source")]
