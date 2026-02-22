@@ -125,7 +125,7 @@ pub struct DistributionTSVRaw {
     #[serde(rename = "dwc:degreeOfEstablishment")]
     pub dwc_degree_of_establishment: String,
     #[serde(rename = "iucn:threatStatus")]
-    pub iucn_threat_status: String,
+    pub iucn_threat_status: Option<ThreatStatusRaw>,
     #[serde(rename = "dwc:pathway")]
     pub dwc_pathway: String,
     #[serde(rename = "dwc:lifeStage")]
@@ -142,4 +142,24 @@ pub struct DistributionTSVRaw {
     pub dcterms_source: String,
     #[serde(rename = "clb:merged")]
     pub clb_merged: String,
+}
+
+#[derive(Debug, Deserialize)]
+pub enum ThreatStatusRaw {
+    #[serde(rename = "least concern")]
+    LeastConcern,
+    #[serde(rename = "vulnerable")]
+    Vulnerable,
+    #[serde(rename = "endangered")]
+    Endangered,
+    #[serde(rename = "critically endangered")]
+    CriticallyEndangered,
+    #[serde(rename = "extinct in the wild")]
+    ExtinctInTheWild,
+    #[serde(rename = "extinct")]
+    Extinct,
+    #[serde(rename = "not evaluated")]
+    NotEvaluated,
+    #[serde(rename = "data deficient")]
+    DataDeficient,
 }
