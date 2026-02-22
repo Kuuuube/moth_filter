@@ -2,7 +2,7 @@ use std::{collections::HashMap, fs::File};
 
 use serde::Serialize;
 
-use crate::tsv_structs::*;
+use crate::{addin_tsv_hashmaps::VernacularHashKey, tsv_structs::*};
 
 mod addin_tsv_hashmaps;
 mod tsv_structs;
@@ -71,6 +71,11 @@ fn main() {
             _ => ()
         };
 
+        let common_name = vernacular.get(&VernacularHashKey {
+            language_code: "eng".to_string(),
+            taxon_id: taxon_tsv_data_raw.dwc_taxon_id.clone(),
+        });
+
         moth_entries.push(SpeciesData {
             catalogue_of_life_taxon_id: taxon_tsv_data_raw.dwc_taxon_id,
             classification: ScientificClassification {
@@ -82,6 +87,7 @@ fn main() {
                 genus: string_to_option(taxon_tsv_data_raw.dwc_genus),
                 epithet: string_to_option(taxon_tsv_data_raw.dwc_specific_epithet),
             },
+            common_name: common_name.cloned(),
         });
     }
 
@@ -104,6 +110,7 @@ fn string_to_option(input: String) -> Option<String> {
 struct SpeciesData {
     catalogue_of_life_taxon_id: String,
     classification: ScientificClassification,
+    common_name: Option<String>,
 }
 
 #[derive(Debug, Serialize)]
