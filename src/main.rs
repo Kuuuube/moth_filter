@@ -101,7 +101,7 @@ fn main() {
     );
     println!("Failed to parse {bad_entry_count} entries");
     println!("Writing output to {}", output_file_path);
-    if let Err(write_error) = serde_json::to_writer(output_file, &moth_entries) {
+    if let Err(write_error) = serde_json::to_writer_pretty(output_file, &moth_entries) {
         dbg!(write_error);
     };
 }
