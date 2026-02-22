@@ -2,19 +2,27 @@ use std::{collections::HashMap, fs::File};
 
 use crate::tsv_structs::*;
 
+#[derive(Eq, Hash, PartialEq)]
+pub struct VernacularHashKey {
+    pub language_code: String,
+    pub taxon_id: String,
+}
+
 pub fn vernacular_to_hashmap(
     tsv_iter: csv::DeserializeRecordsIter<'_, File, VernacularNameTSVRaw>,
-) -> HashMap<String, VernacularNameTSVRaw> {
-    let mut hashmap: HashMap<String, VernacularNameTSVRaw> = HashMap::new();
+) -> HashMap<VernacularHashKey, VernacularNameTSVRaw> {
+    let mut hashmap: HashMap<VernacularHashKey, VernacularNameTSVRaw> = HashMap::new();
     for tsv_reader_result in tsv_iter {
         let Ok(ok) = tsv_reader_result else {
             continue;
         };
-        // currently only accept english names
-        if ok.dcterms_language != "eng" {
-            continue;
-        }
-        hashmap.insert(ok.dwc_taxon_id.clone(), ok);
+        hashmap.insert(
+            VernacularHashKey {
+                language_code: ok.dcterms_language.clone(),
+                taxon_id: ok.dwc_taxon_id.clone(),
+            },
+            ok,
+        );
     }
     return hashmap;
 }
