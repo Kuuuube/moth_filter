@@ -1,4 +1,4 @@
-use std::{collections::HashMap, fs::File, time::Instant};
+use std::{collections::{HashMap, HashSet}, fs::File, time::Instant};
 
 use serde::Serialize;
 
@@ -48,12 +48,27 @@ fn main() {
 
     let mut bad_entry_count = 0;
     let mut moth_entries: Vec<SpeciesData> = Vec::new();
-    let mut moth_synonyms: HashMap<String, String> = HashMap::new();
+    let mut synonyms: HashMap<String, HashSet<String>> = HashMap::new();
+    let mut moth_ids: HashSet<String> = HashSet::new();
 
     for tsv_reader_result in taxon_tsv {
         let Ok(taxon_tsv_data_raw) = tsv_reader_result else {
             bad_entry_count += 1;
             continue;
+        };
+
+        // synonyms have nearly no data and will never be detected as a moth, run before moth check
+        match taxon_tsv_data_raw.dwc_taxonomic_status {
+            TaxonomicStatusRaw::Synonym | TaxonomicStatusRaw::AmbiguousSynonym => {
+                let primary_taxon_id = taxon_tsv_data_raw.dwc_accepted_name_usage_id;
+                let synonym_taxon_id = taxon_tsv_data_raw.dwc_taxon_id;
+                synonyms.entry(primary_taxon_id).and_modify(|x| { x.insert(synonym_taxon_id.clone()); }).or_insert(HashSet::from([synonym_taxon_id]));
+                continue;
+            }
+            TaxonomicStatusRaw::Misapplied => {
+                continue;
+            }
+            _ => (),
         };
 
         // continue if not a moth
@@ -69,19 +84,7 @@ fn main() {
             continue;
         }
 
-        match taxon_tsv_data_raw.dwc_taxonomic_status {
-            TaxonomicStatusRaw::Synonym | TaxonomicStatusRaw::AmbiguousSynonym => {
-                moth_synonyms.insert(
-                    taxon_tsv_data_raw.dwc_taxon_id,
-                    taxon_tsv_data_raw.dwc_accepted_name_usage_id,
-                );
-                continue;
-            }
-            TaxonomicStatusRaw::Misapplied => {
-                continue;
-            }
-            _ => (),
-        };
+        moth_ids.insert(taxon_tsv_data_raw.dwc_taxon_id.clone());
 
         let common_name = vernacular_tsv.get(&VernacularHashKey {
             language_code: "eng".to_string(),
@@ -152,10 +155,12 @@ fn main() {
         });
     }
 
+    let moth_synonyms_count: usize = synonyms.iter().filter(|x| moth_ids.contains(x.0)).map(|x| x.1.len()).sum();
+
     println!(
         "Found {} moths and {} synonym species",
         moth_entries.len(),
-        moth_synonyms.len()
+        moth_synonyms_count,
     );
     if bad_entry_count > 0 {
         println!("Failed to parse {bad_entry_count} entries");
