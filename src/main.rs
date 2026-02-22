@@ -66,7 +66,7 @@ fn main() {
             continue;
         }
 
-        // synonyms have nearly no data and will never be detected as a moth, run before moth check
+        // synonyms have nearly no data and will never be detected as a moth, run before moth check and filter out non moths later
         match taxon_tsv_data_raw.dwc_taxonomic_status {
             TaxonomicStatusRaw::Synonym | TaxonomicStatusRaw::AmbiguousSynonym => {
                 let primary_taxon_id = taxon_tsv_data_raw.dwc_accepted_name_usage_id;
