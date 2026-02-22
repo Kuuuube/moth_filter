@@ -52,7 +52,7 @@ fn main() {
 
     let mut bad_entry_count = 0;
     let mut moth_entries: Vec<SpeciesData> = Vec::new();
-    let mut synonyms: HashMap<String, HashSet<String>> = HashMap::new();
+    let mut synonyms: HashMap<String, Vec<Synonym>> = HashMap::new();
     let mut moth_ids: HashSet<String> = HashSet::new();
 
     for tsv_reader_result in taxon_tsv {
@@ -65,13 +65,13 @@ fn main() {
         match taxon_tsv_data_raw.dwc_taxonomic_status {
             TaxonomicStatusRaw::Synonym | TaxonomicStatusRaw::AmbiguousSynonym => {
                 let primary_taxon_id = taxon_tsv_data_raw.dwc_accepted_name_usage_id;
-                let synonym_taxon_id = taxon_tsv_data_raw.dwc_taxon_id;
+                let synonym = Synonym { catalogue_of_life_taxon_id: taxon_tsv_data_raw.dwc_taxon_id, genus: taxon_tsv_data_raw.dwc_generic_name, epithet: taxon_tsv_data_raw.dwc_specific_epithet };
                 synonyms
                     .entry(primary_taxon_id)
                     .and_modify(|x| {
-                        x.insert(synonym_taxon_id.clone());
+                        x.push(synonym.clone());
                     })
-                    .or_insert(HashSet::from([synonym_taxon_id]));
+                    .or_insert(vec![synonym]);
                 continue;
             }
             TaxonomicStatusRaw::Misapplied => {
@@ -161,14 +161,16 @@ fn main() {
             common_name: common_name.cloned(),
             species_profile: species_profile,
             distribution: distribution,
+            synonyms: None,
         });
     }
 
-    let moth_synonyms_count: usize = synonyms
-        .iter()
-        .filter(|x| moth_ids.contains(x.0))
-        .map(|x| x.1.len())
-        .sum();
+    synonyms.retain(|key, _value| moth_ids.contains(key));
+    let moth_synonyms_count: usize = synonyms.iter().map(|x| x.1.len()).sum();
+
+    for moth_entry in moth_entries.iter_mut() {
+        moth_entry.synonyms = synonyms.get(&moth_entry.catalogue_of_life_taxon_id).cloned();
+    }
 
     println!(
         "Found {} moths and {} synonym species",
@@ -196,6 +198,8 @@ struct SpeciesData {
     species_profile: Option<SpeciesProfile>,
     #[serde(skip_serializing_if = "Option::is_none")]
     distribution: Option<Distribution>,
+    #[serde(skip_serializing_if = "Option::is_none")]
+    synonyms: Option<Vec<Synonym>>,
 }
 
 #[derive(Debug, Serialize)]
@@ -242,4 +246,13 @@ struct ScientificClassification {
     subtribe: Option<String>,
     genus: String,
     epithet: String,
+}
+
+#[derive(Debug, Clone, Serialize)]
+struct Synonym {
+    catalogue_of_life_taxon_id: String,
+    #[serde(skip_serializing_if = "Option::is_none")]
+    genus: Option<String>,
+    #[serde(skip_serializing_if = "Option::is_none")]
+    epithet: Option<String>,
 }
