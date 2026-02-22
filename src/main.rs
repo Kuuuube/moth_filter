@@ -70,7 +70,9 @@ fn main() {
         match taxon_tsv_data_raw.dwc_taxonomic_status {
             TaxonomicStatusRaw::Synonym | TaxonomicStatusRaw::AmbiguousSynonym => {
                 let primary_taxon_id = taxon_tsv_data_raw.dwc_accepted_name_usage_id;
-                if let Some(genus) = taxon_tsv_data_raw.dwc_generic_name && let Some(epithet) = taxon_tsv_data_raw.dwc_specific_epithet {
+                if let Some(genus) = taxon_tsv_data_raw.dwc_generic_name
+                    && let Some(epithet) = taxon_tsv_data_raw.dwc_specific_epithet
+                {
                     let synonym = SynonymSpecies {
                         catalogue_of_life_taxon_id: taxon_tsv_data_raw.dwc_taxon_id,
                         genus: genus,
