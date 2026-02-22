@@ -62,13 +62,16 @@ fn main() {
         }
         match taxon_tsv_data_raw.dwc_taxonomic_status {
             TaxonomicStatusRaw::Synonym | TaxonomicStatusRaw::AmbiguousSynonym => {
-                moth_synonyms.insert(taxon_tsv_data_raw.dwc_taxon_id, taxon_tsv_data_raw.dwc_accepted_name_usage_id);
+                moth_synonyms.insert(
+                    taxon_tsv_data_raw.dwc_taxon_id,
+                    taxon_tsv_data_raw.dwc_accepted_name_usage_id,
+                );
                 continue;
-            },
+            }
             TaxonomicStatusRaw::Misapplied => {
                 continue;
             }
-            _ => ()
+            _ => (),
         };
 
         let common_name = vernacular.get(&VernacularHashKey {
@@ -91,7 +94,11 @@ fn main() {
         });
     }
 
-    println!("Found {} moths and {} synonym species", moth_entries.len(), moth_synonyms.len());
+    println!(
+        "Found {} moths and {} synonym species",
+        moth_entries.len(),
+        moth_synonyms.len()
+    );
     println!("Failed to parse {bad_entry_count} entries");
     println!("Writing output to {}", output_file_path);
     if let Err(write_error) = serde_json::to_writer(output_file, &moth_entries) {
