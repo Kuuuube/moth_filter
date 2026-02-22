@@ -174,7 +174,7 @@ fn main() {
                 genus: genus_fixed,
                 epithet: epithet_checked,
             },
-            common_name: common_name.cloned(),
+            common_names: common_name.cloned(),
             species_profile: species_profile,
             distribution: distribution,
             synonyms: None,
@@ -211,7 +211,7 @@ struct SpeciesData {
     catalogue_of_life_taxon_id: String,
     classification: ScientificClassification,
     #[serde(skip_serializing_if = "Option::is_none")]
-    common_name: Option<String>,
+    common_names: Option<Vec<String>>,
     #[serde(skip_serializing_if = "Option::is_none")]
     species_profile: Option<SpeciesProfile>,
     #[serde(skip_serializing_if = "Option::is_none")]
