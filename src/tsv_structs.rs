@@ -106,13 +106,13 @@ pub struct SpeciesProfileTSVRaw {
     #[serde(rename = "dwc:taxonID")]
     pub dwc_taxon_id: String,
     #[serde(rename = "gbif:isExtinct")]
-    pub gbif_is_extinct: String,
+    pub gbif_is_extinct: Option<bool>,
     #[serde(rename = "gbif:isMarine")]
-    pub gbif_is_marine: String,
+    pub gbif_is_marine: Option<bool>,
     #[serde(rename = "gbif:isFreshwater")]
-    pub gbif_is_freshwater: String,
+    pub gbif_is_freshwater: Option<bool>,
     #[serde(rename = "gbif:isTerrestrial")]
-    pub gbif_is_terrestrial: String,
+    pub gbif_is_terrestrial: Option<bool>,
 }
 
 #[derive(Debug, Deserialize)]
