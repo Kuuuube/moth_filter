@@ -137,6 +137,9 @@ fn main() {
                     ThreatStatusRaw::NotEvaluated => None,
                     ThreatStatusRaw::DataDeficient => None,
                 });
+                if x.dwc_locality.is_none() && threat_status.is_none() {
+                    return None;
+                }
                 Some(Distribution {
                     locality: x.dwc_locality.clone(),
                     threat_status,
