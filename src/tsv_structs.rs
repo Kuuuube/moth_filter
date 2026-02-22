@@ -30,7 +30,7 @@ pub struct TaxonTSVRaw {
     #[serde(rename = "dwc:infragenericEpithet")]
     pub dwc_infrageneric_epithet: String,
     #[serde(rename = "dwc:specificEpithet")]
-    pub dwc_specific_epithet: String,
+    pub dwc_specific_epithet: Option<String>,
     #[serde(rename = "dwc:infraspecificEpithet")]
     pub dwc_infraspecific_epithet: String,
     #[serde(rename = "dwc:cultivarEpithet")]
@@ -44,27 +44,27 @@ pub struct TaxonTSVRaw {
     #[serde(rename = "dwc:nomenclaturalStatus")]
     pub dwc_nomenclatural_status: String,
     #[serde(rename = "dwc:kingdom")]
-    pub dwc_kingdom: String,
+    pub dwc_kingdom: Option<String>,
     #[serde(rename = "dwc:phylum")]
-    pub dwc_phylum: String,
+    pub dwc_phylum: Option<String>,
     #[serde(rename = "dwc:class")]
-    pub dwc_class: String,
+    pub dwc_class: Option<String>,
     #[serde(rename = "dwc:order")]
-    pub dwc_order: String,
+    pub dwc_order: Option<String>,
     #[serde(rename = "dwc:superfamily")]
-    pub dwc_superfamily: String,
+    pub dwc_superfamily: Option<String>,
     #[serde(rename = "dwc:family")]
-    pub dwc_family: String,
+    pub dwc_family: Option<String>,
     #[serde(rename = "dwc:subfamily")]
-    pub dwc_subfamily: String,
+    pub dwc_subfamily: Option<String>,
     #[serde(rename = "dwc:tribe")]
-    pub dwc_tribe: String,
+    pub dwc_tribe: Option<String>,
     #[serde(rename = "dwc:subtribe")]
-    pub dwc_subtribe: String,
+    pub dwc_subtribe: Option<String>,
     #[serde(rename = "dwc:genus")]
-    pub dwc_genus: String,
+    pub dwc_genus: Option<String>,
     #[serde(rename = "dwc:subgenus")]
-    pub dwc_subgenus: String,
+    pub dwc_subgenus: Option<String>,
     #[serde(rename = "dwc:taxonRemarks")]
     pub dwc_taxon_remarks: String,
     #[serde(rename = "dcterms:references")]

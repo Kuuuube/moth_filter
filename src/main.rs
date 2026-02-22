@@ -53,13 +53,12 @@ fn main() {
             bad_entry_count += 1;
             continue;
         };
-        if taxon_tsv_data_raw.dwc_taxon_rank != "species"
-            || taxon_tsv_data_raw.dwc_order != MOTH_ORDER
-            || taxon_tsv_data_raw.dwc_superfamily == BUTTERFLY_SUPERFAMILY
-        {
-            // not a moth
-            continue;
-        }
+
+        // not a moth
+        if let Some(order) = &taxon_tsv_data_raw.dwc_order && order != MOTH_ORDER { continue; }
+        if let Some(superfamily) = &taxon_tsv_data_raw.dwc_superfamily && superfamily == BUTTERFLY_SUPERFAMILY { continue; }
+        if taxon_tsv_data_raw.dwc_taxon_rank != "species" { continue; }
+
         match taxon_tsv_data_raw.dwc_taxonomic_status {
             TaxonomicStatusRaw::Synonym | TaxonomicStatusRaw::AmbiguousSynonym => {
                 moth_synonyms.insert(
@@ -108,16 +107,17 @@ fn main() {
                     threat_status,
                 })
             });
+
         moth_entries.push(SpeciesData {
             catalogue_of_life_taxon_id: taxon_tsv_data_raw.dwc_taxon_id,
             classification: ScientificClassification {
-                superfamily: string_to_option(taxon_tsv_data_raw.dwc_superfamily),
-                family: string_to_option(taxon_tsv_data_raw.dwc_family),
-                subfamily: string_to_option(taxon_tsv_data_raw.dwc_subfamily),
-                tribe: string_to_option(taxon_tsv_data_raw.dwc_tribe),
-                subtribe: string_to_option(taxon_tsv_data_raw.dwc_subtribe),
-                genus: string_to_option(taxon_tsv_data_raw.dwc_genus),
-                epithet: string_to_option(taxon_tsv_data_raw.dwc_specific_epithet),
+                superfamily: taxon_tsv_data_raw.dwc_superfamily,
+                family: taxon_tsv_data_raw.dwc_family,
+                subfamily: taxon_tsv_data_raw.dwc_subfamily,
+                tribe: taxon_tsv_data_raw.dwc_tribe,
+                subtribe: taxon_tsv_data_raw.dwc_subtribe,
+                genus: taxon_tsv_data_raw.dwc_genus,
+                epithet: taxon_tsv_data_raw.dwc_specific_epithet,
             },
             common_name: common_name.cloned(),
             species_profile: species_profile,
@@ -135,13 +135,6 @@ fn main() {
     if let Err(write_error) = serde_json::to_writer_pretty(output_file, &moth_entries) {
         dbg!(write_error);
     };
-}
-
-fn string_to_option(input: String) -> Option<String> {
-    if input.len() == 0 {
-        return None;
-    }
-    return Some(input);
 }
 
 #[derive(Debug, Serialize)]
