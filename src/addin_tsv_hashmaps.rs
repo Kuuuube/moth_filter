@@ -7,21 +7,22 @@ pub struct VernacularHashKey {
     pub language_code: String,
     pub taxon_id: String,
 }
+pub type VernacularCommonName = String;
 
 pub fn vernacular_to_hashmap(
     tsv_iter: csv::DeserializeRecordsIter<'_, File, VernacularNameTSVRaw>,
-) -> HashMap<VernacularHashKey, VernacularNameTSVRaw> {
-    let mut hashmap: HashMap<VernacularHashKey, VernacularNameTSVRaw> = HashMap::new();
+) -> HashMap<VernacularHashKey, VernacularCommonName> {
+    let mut hashmap: HashMap<VernacularHashKey, VernacularCommonName> = HashMap::new();
     for tsv_reader_result in tsv_iter {
         let Ok(ok) = tsv_reader_result else {
             continue;
         };
         hashmap.insert(
             VernacularHashKey {
-                language_code: ok.dcterms_language.clone(),
-                taxon_id: ok.dwc_taxon_id.clone(),
+                language_code: ok.dcterms_language,
+                taxon_id: ok.dwc_taxon_id,
             },
-            ok,
+            ok.dwc_vernacular_name,
         );
     }
     return hashmap;
