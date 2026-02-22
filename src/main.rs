@@ -198,7 +198,7 @@ fn main() {
     if bad_entry_count > 0 {
         println!("Failed to parse {bad_entry_count} entries");
     }
-    println!("Parsed in: {:.6?}", start_time.elapsed());
+    println!("Parsed and constructed data in: {:.6?}", start_time.elapsed());
 
     println!("Writing output to {}", output_file_path);
     if let Err(write_error) = serde_json::to_writer_pretty(output_file, &moth_entries) {
