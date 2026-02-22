@@ -61,6 +61,11 @@ fn main() {
             continue;
         };
 
+        // filter out not species before checking for synonyms
+        if taxon_tsv_data_raw.dwc_taxon_rank != "species" {
+            continue;
+        }
+
         // synonyms have nearly no data and will never be detected as a moth, run before moth check
         match taxon_tsv_data_raw.dwc_taxonomic_status {
             TaxonomicStatusRaw::Synonym | TaxonomicStatusRaw::AmbiguousSynonym => {
@@ -88,7 +93,7 @@ fn main() {
         let Some(order) = &taxon_tsv_data_raw.dwc_order else {
             continue;
         };
-        if taxon_tsv_data_raw.dwc_taxon_rank != "species" || order != MOTH_ORDER {
+        if order != MOTH_ORDER {
             continue;
         }
         if let Some(superfamily) = &taxon_tsv_data_raw.dwc_superfamily
