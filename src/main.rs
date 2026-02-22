@@ -6,12 +6,13 @@ use std::{
     time::Instant,
 };
 
-use serde::Serialize;
-
 use crate::{addin_tsv_hashmaps::VernacularHashKey, tsv_structs::*};
 
 mod addin_tsv_hashmaps;
+mod json_structs;
 mod tsv_structs;
+
+use json_structs::*;
 
 const MOTH_ORDER: &str = "Lepidoptera";
 const BUTTERFLY_SUPERFAMILY: &str = "Papilionoidea";
@@ -227,71 +228,4 @@ fn write_zstd(input_file_path: &str, mut output_file: &File) -> Result<(), Box<d
     output_file.write(&compressor.compress(&compression_target_data)?)?;
 
     return Ok(());
-}
-
-#[derive(Debug, Serialize)]
-struct SpeciesData {
-    catalogue_of_life_taxon_id: String,
-    classification: ScientificClassification,
-    #[serde(skip_serializing_if = "Option::is_none")]
-    common_names: Option<Vec<String>>,
-    #[serde(skip_serializing_if = "Option::is_none")]
-    species_profile: Option<SpeciesProfile>,
-    #[serde(skip_serializing_if = "Option::is_none")]
-    distribution: Option<Distribution>,
-    #[serde(skip_serializing_if = "Option::is_none")]
-    synonyms: Option<Vec<SynonymSpecies>>,
-}
-
-#[derive(Debug, Serialize)]
-struct Distribution {
-    #[serde(skip_serializing_if = "Option::is_none")]
-    locality: Option<String>,
-    #[serde(skip_serializing_if = "Option::is_none")]
-    threat_status: Option<ThreatStatus>,
-}
-
-#[derive(Debug, Serialize)]
-pub enum ThreatStatus {
-    LeastConcern,
-    Vulnerable,
-    Endangered,
-    CriticallyEndangered,
-    ExtinctInTheWild,
-    Extinct,
-}
-
-#[derive(Debug, Serialize)]
-struct SpeciesProfile {
-    #[serde(skip_serializing_if = "Option::is_none")]
-    extinct: Option<bool>,
-    // yep, aquatic moths are a thing though this database doesn't have many of them identified
-    #[serde(skip_serializing_if = "Option::is_none")]
-    freshwater: Option<bool>,
-    #[serde(skip_serializing_if = "Option::is_none")]
-    marine: Option<bool>,
-}
-
-#[derive(Debug, Serialize)]
-struct ScientificClassification {
-    // somehow any of these (even genus and epithet) can be empty for a species
-    #[serde(skip_serializing_if = "Option::is_none")]
-    superfamily: Option<String>,
-    #[serde(skip_serializing_if = "Option::is_none")]
-    family: Option<String>,
-    #[serde(skip_serializing_if = "Option::is_none")]
-    subfamily: Option<String>,
-    #[serde(skip_serializing_if = "Option::is_none")]
-    tribe: Option<String>,
-    #[serde(skip_serializing_if = "Option::is_none")]
-    subtribe: Option<String>,
-    genus: String,
-    epithet: String,
-}
-
-#[derive(Debug, Clone, Serialize)]
-struct SynonymSpecies {
-    catalogue_of_life_taxon_id: String,
-    genus: String,
-    epithet: String,
 }
