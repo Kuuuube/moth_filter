@@ -132,7 +132,9 @@ fn main() {
         moth_entries.len(),
         moth_synonyms.len()
     );
-    println!("Failed to parse {bad_entry_count} entries");
+    if bad_entry_count > 0 {
+        println!("Failed to parse {bad_entry_count} entries");
+    }
     println!("Parsed in: {:.6?}", start_time.elapsed());
 
     println!("Writing output to {}", output_file_path);
