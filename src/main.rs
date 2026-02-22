@@ -117,17 +117,25 @@ fn string_to_option(input: String) -> Option<String> {
 struct SpeciesData {
     catalogue_of_life_taxon_id: String,
     classification: ScientificClassification,
+    #[serde(skip_serializing_if = "Option::is_none")]
     common_name: Option<String>,
 }
 
 #[derive(Debug, Serialize)]
 struct ScientificClassification {
     // somehow any of these (even genus and epithet) can be empty for a species
+    #[serde(skip_serializing_if = "Option::is_none")]
     superfamily: Option<String>,
+    #[serde(skip_serializing_if = "Option::is_none")]
     family: Option<String>,
+    #[serde(skip_serializing_if = "Option::is_none")]
     subfamily: Option<String>,
+    #[serde(skip_serializing_if = "Option::is_none")]
     tribe: Option<String>,
+    #[serde(skip_serializing_if = "Option::is_none")]
     subtribe: Option<String>,
+    #[serde(skip_serializing_if = "Option::is_none")]
     genus: Option<String>,
+    #[serde(skip_serializing_if = "Option::is_none")]
     epithet: Option<String>,
 }
