@@ -65,7 +65,11 @@ fn main() {
         match taxon_tsv_data_raw.dwc_taxonomic_status {
             TaxonomicStatusRaw::Synonym | TaxonomicStatusRaw::AmbiguousSynonym => {
                 let primary_taxon_id = taxon_tsv_data_raw.dwc_accepted_name_usage_id;
-                let synonym = Synonym { catalogue_of_life_taxon_id: taxon_tsv_data_raw.dwc_taxon_id, genus: taxon_tsv_data_raw.dwc_generic_name, epithet: taxon_tsv_data_raw.dwc_specific_epithet };
+                let synonym = Synonym {
+                    catalogue_of_life_taxon_id: taxon_tsv_data_raw.dwc_taxon_id,
+                    genus: taxon_tsv_data_raw.dwc_generic_name,
+                    epithet: taxon_tsv_data_raw.dwc_specific_epithet,
+                };
                 synonyms
                     .entry(primary_taxon_id)
                     .and_modify(|x| {
@@ -169,7 +173,9 @@ fn main() {
     let moth_synonyms_count: usize = synonyms.iter().map(|x| x.1.len()).sum();
 
     for moth_entry in moth_entries.iter_mut() {
-        moth_entry.synonyms = synonyms.get(&moth_entry.catalogue_of_life_taxon_id).cloned();
+        moth_entry.synonyms = synonyms
+            .get(&moth_entry.catalogue_of_life_taxon_id)
+            .cloned();
     }
 
     println!(
