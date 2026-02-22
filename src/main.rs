@@ -110,6 +110,23 @@ fn main() {
                 })
             });
 
+        // some malformed entries dont have a `genus` but have a `generic name` which is synonymous
+        let genus_fixed = match taxon_tsv_data_raw.dwc_genus {
+            Some(some) => some,
+            None => match taxon_tsv_data_raw.dwc_generic_name {
+                Some(some) => some,
+                None => {
+                    bad_entry_count += 1;
+                    continue;
+                },
+            },
+        };
+
+        let Some(epithet_checked) = taxon_tsv_data_raw.dwc_specific_epithet else {
+            bad_entry_count += 1;
+            continue
+        };
+
         moth_entries.push(SpeciesData {
             catalogue_of_life_taxon_id: taxon_tsv_data_raw.dwc_taxon_id,
             classification: ScientificClassification {
@@ -118,8 +135,8 @@ fn main() {
                 subfamily: taxon_tsv_data_raw.dwc_subfamily,
                 tribe: taxon_tsv_data_raw.dwc_tribe,
                 subtribe: taxon_tsv_data_raw.dwc_subtribe,
-                genus: taxon_tsv_data_raw.dwc_genus,
-                epithet: taxon_tsv_data_raw.dwc_specific_epithet,
+                genus: genus_fixed,
+                epithet: epithet_checked,
             },
             common_name: common_name.cloned(),
             species_profile: species_profile,
@@ -197,8 +214,6 @@ struct ScientificClassification {
     tribe: Option<String>,
     #[serde(skip_serializing_if = "Option::is_none")]
     subtribe: Option<String>,
-    #[serde(skip_serializing_if = "Option::is_none")]
-    genus: Option<String>,
-    #[serde(skip_serializing_if = "Option::is_none")]
-    epithet: Option<String>,
+    genus: String,
+    epithet: String,
 }

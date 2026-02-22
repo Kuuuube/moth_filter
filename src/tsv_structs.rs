@@ -26,7 +26,7 @@ pub struct TaxonTSVRaw {
     #[serde(rename = "col:notho")]
     pub col_notho: String,
     #[serde(rename = "dwc:genericName")]
-    pub dwc_generic_name: String,
+    pub dwc_generic_name: Option<String>,
     #[serde(rename = "dwc:infragenericEpithet")]
     pub dwc_infrageneric_epithet: String,
     #[serde(rename = "dwc:specificEpithet")]
