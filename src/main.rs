@@ -21,7 +21,7 @@ fn main() {
         .delimiter(b'\t')
         .quoting(false)
         .from_reader(File::open("./data/VernacularName.tsv").unwrap());
-    let vernacular = addin_tsv_hashmaps::vernacular_to_hashmap(
+    let vernacular_tsv = addin_tsv_hashmaps::vernacular_to_hashmap(
         vernacular_tsv_reader.deserialize::<VernacularNameTSVRaw>(),
     );
 
@@ -74,7 +74,7 @@ fn main() {
             _ => (),
         };
 
-        let common_name = vernacular.get(&VernacularHashKey {
+        let common_name = vernacular_tsv.get(&VernacularHashKey {
             language_code: "eng".to_string(),
             taxon_id: taxon_tsv_data_raw.dwc_taxon_id.clone(),
         });
