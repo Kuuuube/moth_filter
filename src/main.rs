@@ -52,7 +52,7 @@ fn main() {
 
     let mut bad_entry_count = 0;
     let mut moth_entries: Vec<SpeciesData> = Vec::new();
-    let mut synonyms: HashMap<String, Vec<Synonym>> = HashMap::new();
+    let mut synonyms: HashMap<String, Vec<SynonymSpecies>> = HashMap::new();
     let mut moth_ids: HashSet<String> = HashSet::new();
 
     for tsv_reader_result in taxon_tsv {
@@ -70,17 +70,19 @@ fn main() {
         match taxon_tsv_data_raw.dwc_taxonomic_status {
             TaxonomicStatusRaw::Synonym | TaxonomicStatusRaw::AmbiguousSynonym => {
                 let primary_taxon_id = taxon_tsv_data_raw.dwc_accepted_name_usage_id;
-                let synonym = Synonym {
-                    catalogue_of_life_taxon_id: taxon_tsv_data_raw.dwc_taxon_id,
-                    genus: taxon_tsv_data_raw.dwc_generic_name,
-                    epithet: taxon_tsv_data_raw.dwc_specific_epithet,
-                };
-                synonyms
-                    .entry(primary_taxon_id)
-                    .and_modify(|x| {
-                        x.push(synonym.clone());
-                    })
-                    .or_insert(vec![synonym]);
+                if let Some(genus) = taxon_tsv_data_raw.dwc_generic_name && let Some(epithet) = taxon_tsv_data_raw.dwc_specific_epithet {
+                    let synonym = SynonymSpecies {
+                        catalogue_of_life_taxon_id: taxon_tsv_data_raw.dwc_taxon_id,
+                        genus: genus,
+                        epithet: epithet,
+                    };
+                    synonyms
+                        .entry(primary_taxon_id)
+                        .and_modify(|x| {
+                            x.push(synonym.clone());
+                        })
+                        .or_insert(vec![synonym]);
+                }
                 continue;
             }
             TaxonomicStatusRaw::Misapplied => {
@@ -210,7 +212,7 @@ struct SpeciesData {
     #[serde(skip_serializing_if = "Option::is_none")]
     distribution: Option<Distribution>,
     #[serde(skip_serializing_if = "Option::is_none")]
-    synonyms: Option<Vec<Synonym>>,
+    synonyms: Option<Vec<SynonymSpecies>>,
 }
 
 #[derive(Debug, Serialize)]
@@ -260,10 +262,8 @@ struct ScientificClassification {
 }
 
 #[derive(Debug, Clone, Serialize)]
-struct Synonym {
+struct SynonymSpecies {
     catalogue_of_life_taxon_id: String,
-    #[serde(skip_serializing_if = "Option::is_none")]
-    genus: Option<String>,
-    #[serde(skip_serializing_if = "Option::is_none")]
-    epithet: Option<String>,
+    genus: String,
+    epithet: String,
 }
