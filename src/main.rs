@@ -88,6 +88,26 @@ fn main() {
                 })
             });
 
+        let distribution = distribution_tsv
+            .get(&taxon_tsv_data_raw.dwc_taxon_id)
+            .and_then(|x| {
+                let threat_status = x.iucn_threat_status.as_ref().and_then(|x| match x {
+                    ThreatStatusRaw::LeastConcern => Some(ThreatStatus::LeastConcern),
+                    ThreatStatusRaw::Vulnerable => Some(ThreatStatus::Vulnerable),
+                    ThreatStatusRaw::Endangered => Some(ThreatStatus::Endangered),
+                    ThreatStatusRaw::CriticallyEndangered => {
+                        Some(ThreatStatus::CriticallyEndangered)
+                    }
+                    ThreatStatusRaw::ExtinctInTheWild => Some(ThreatStatus::ExtinctInTheWild),
+                    ThreatStatusRaw::Extinct => Some(ThreatStatus::Extinct),
+                    ThreatStatusRaw::NotEvaluated => None,
+                    ThreatStatusRaw::DataDeficient => None,
+                });
+                Some(Distribution {
+                    locality: x.dwc_locality.clone(),
+                    threat_status,
+                })
+            });
         moth_entries.push(SpeciesData {
             catalogue_of_life_taxon_id: taxon_tsv_data_raw.dwc_taxon_id,
             classification: ScientificClassification {
@@ -101,6 +121,7 @@ fn main() {
             },
             common_name: common_name.cloned(),
             species_profile: species_profile,
+            distribution: distribution,
         });
     }
 
@@ -131,6 +152,26 @@ struct SpeciesData {
     common_name: Option<String>,
     #[serde(skip_serializing_if = "Option::is_none")]
     species_profile: Option<SpeciesProfile>,
+    #[serde(skip_serializing_if = "Option::is_none")]
+    distribution: Option<Distribution>,
+}
+
+#[derive(Debug, Serialize)]
+struct Distribution {
+    #[serde(skip_serializing_if = "Option::is_none")]
+    locality: Option<String>,
+    #[serde(skip_serializing_if = "Option::is_none")]
+    threat_status: Option<ThreatStatus>,
+}
+
+#[derive(Debug, Serialize)]
+pub enum ThreatStatus {
+    LeastConcern,
+    Vulnerable,
+    Endangered,
+    CriticallyEndangered,
+    ExtinctInTheWild,
+    Extinct,
 }
 
 #[derive(Debug, Serialize)]
