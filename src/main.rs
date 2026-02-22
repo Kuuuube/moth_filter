@@ -57,9 +57,17 @@ fn main() {
         };
 
         // continue if not a moth
-        let Some(order) = &taxon_tsv_data_raw.dwc_order else { continue; };
-        if taxon_tsv_data_raw.dwc_taxon_rank != "species" || order != MOTH_ORDER { continue; }
-        if let Some(superfamily) = &taxon_tsv_data_raw.dwc_superfamily && superfamily == BUTTERFLY_SUPERFAMILY { continue; }
+        let Some(order) = &taxon_tsv_data_raw.dwc_order else {
+            continue;
+        };
+        if taxon_tsv_data_raw.dwc_taxon_rank != "species" || order != MOTH_ORDER {
+            continue;
+        }
+        if let Some(superfamily) = &taxon_tsv_data_raw.dwc_superfamily
+            && superfamily == BUTTERFLY_SUPERFAMILY
+        {
+            continue;
+        }
 
         match taxon_tsv_data_raw.dwc_taxonomic_status {
             TaxonomicStatusRaw::Synonym | TaxonomicStatusRaw::AmbiguousSynonym => {
@@ -118,13 +126,13 @@ fn main() {
                 None => {
                     bad_entry_count += 1;
                     continue;
-                },
+                }
             },
         };
 
         let Some(epithet_checked) = taxon_tsv_data_raw.dwc_specific_epithet else {
             bad_entry_count += 1;
-            continue
+            continue;
         };
 
         moth_entries.push(SpeciesData {
