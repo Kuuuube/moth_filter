@@ -10,7 +10,7 @@ serde_json = { version = "1", optional = true }
 zstd = { version = "0.13.3", features = ["zdict_builder"], optional = true }
 
 [features]
-build-bin = ["csv", "serde_json", "zstd"]
+default = ["csv", "serde_json", "zstd"]
 
 [lib]
 name = "moth_filter"
@@ -19,4 +19,3 @@ path = "src/lib.rs"
 [[bin]]
 name = "moth_filter"
 path = "src/main.rs"
-required-features = ["build-bin"]

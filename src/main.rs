@@ -182,6 +182,7 @@ fn main() {
             species_profile: species_profile,
             distribution: distribution,
             synonyms: None,
+            published_in: Some(taxon_tsv_data_raw.dwc_name_published_in),
         });
     }
 

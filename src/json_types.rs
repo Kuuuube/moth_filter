@@ -12,6 +12,8 @@ pub struct SpeciesData {
     pub distribution: Option<Distribution>,
     #[serde(skip_serializing_if = "Option::is_none")]
     pub synonyms: Option<Vec<SynonymSpecies>>,
+    #[serde(skip_serializing_if = "Option::is_none")]
+    pub published_in: Option<String>,
 }
 
 #[derive(Debug, Clone, Serialize, Deserialize)]
