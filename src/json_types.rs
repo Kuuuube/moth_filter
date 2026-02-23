@@ -1,6 +1,6 @@
-use serde::Serialize;
+use serde::{Deserialize, Serialize};
 
-#[derive(Debug, Serialize)]
+#[derive(Debug, Serialize, Deserialize)]
 pub struct SpeciesData {
     pub catalogue_of_life_taxon_id: String,
     pub classification: ScientificClassification,
@@ -14,7 +14,7 @@ pub struct SpeciesData {
     pub synonyms: Option<Vec<SynonymSpecies>>,
 }
 
-#[derive(Debug, Serialize)]
+#[derive(Debug, Serialize, Deserialize)]
 pub struct Distribution {
     #[serde(skip_serializing_if = "Option::is_none")]
     pub locality: Option<String>,
@@ -22,7 +22,7 @@ pub struct Distribution {
     pub threat_status: Option<ThreatStatus>,
 }
 
-#[derive(Debug, Serialize)]
+#[derive(Debug, Serialize, Deserialize)]
 pub enum ThreatStatus {
     LeastConcern,
     Vulnerable,
@@ -32,7 +32,7 @@ pub enum ThreatStatus {
     Extinct,
 }
 
-#[derive(Debug, Serialize)]
+#[derive(Debug, Serialize, Deserialize)]
 pub struct SpeciesProfile {
     #[serde(skip_serializing_if = "Option::is_none")]
     pub extinct: Option<bool>,
@@ -43,7 +43,7 @@ pub struct SpeciesProfile {
     pub marine: Option<bool>,
 }
 
-#[derive(Debug, Serialize)]
+#[derive(Debug, Serialize, Deserialize)]
 pub struct ScientificClassification {
     // somehow any of these (even genus and epithet) can be empty for a species
     #[serde(skip_serializing_if = "Option::is_none")]
@@ -60,7 +60,7 @@ pub struct ScientificClassification {
     pub epithet: String,
 }
 
-#[derive(Debug, Clone, Serialize)]
+#[derive(Debug, Clone, Serialize, Deserialize)]
 pub struct SynonymSpecies {
     pub catalogue_of_life_taxon_id: String,
     pub genus: String,
