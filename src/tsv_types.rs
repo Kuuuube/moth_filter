@@ -38,7 +38,7 @@ pub struct TaxonTSVRaw {
     #[serde(rename = "dwc:nameAccordingTo")]
     pub dwc_name_according_to: String,
     #[serde(rename = "dwc:namePublishedIn")]
-    pub dwc_name_published_in: String,
+    pub dwc_name_published_in: Option<String>,
     #[serde(rename = "dwc:nomenclaturalCode")]
     pub dwc_nomenclatural_code: String,
     #[serde(rename = "dwc:nomenclaturalStatus")]
