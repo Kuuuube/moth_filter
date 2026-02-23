@@ -12,9 +12,17 @@ Papilionoidea contains all the butterflies. Moths are everything besides butterf
 
 https://www.catalogueoflife.org/data/download or https://download.checklistbank.org/col/monthly/
 
-The `Darwin Core Archive` or `dwca` is used here. Extract and move it `Taxon.tsv` to `./data/Taxon.tsv`.
+The `Darwin Core Archive` or `dwca` is used here (base or extended `xr` is up to you). Extract and move the contents to `./data`. You should have a bunch of `tsv` files directly in the data directory.
 
 Downloads for specific taxonomic groups can be created with an account.
+
+## Generating Output
+
+After getting the downloads sorted, assuming you already have [Rust](https://rust-lang.org/tools/install/) installed as well, run this:
+
+```bash
+cargo run --release
+```
 
 ## Lib
 
