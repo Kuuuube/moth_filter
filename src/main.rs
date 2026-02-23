@@ -6,13 +6,11 @@ use std::{
     time::Instant,
 };
 
-use crate::{addin_tsv_hashmaps::VernacularHashKey, tsv_structs::*};
+use crate::{addin_tsv_hashmaps::VernacularHashKey, json_types::*, tsv_types::*};
 
 mod addin_tsv_hashmaps;
-mod json_structs;
-mod tsv_structs;
-
-use json_structs::*;
+mod json_types;
+mod tsv_types;
 
 const MOTH_ORDER: &str = "Lepidoptera";
 const BUTTERFLY_SUPERFAMILY: &str = "Papilionoidea";

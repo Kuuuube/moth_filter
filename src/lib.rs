@@ -1,3 +1,3 @@
-pub use json_structs::*;
+pub use json_types::*;
 
-mod json_structs;
+mod json_types;

@@ -1,6 +1,6 @@
 use std::{collections::HashMap, fs::File};
 
-use crate::tsv_structs::*;
+use crate::tsv_types::*;
 
 #[derive(Eq, Hash, PartialEq)]
 pub struct VernacularHashKey {
