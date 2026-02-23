@@ -15,3 +15,9 @@ https://www.catalogueoflife.org/data/download or https://download.checklistbank.
 The `Darwin Core Archive` or `dwca` is used here. Extract and move it `Taxon.tsv` to `./data/Taxon.tsv`.
 
 Downloads for specific taxonomic groups can be created with an account.
+
+## Lib
+
+Minimal docs are available for injesting the output json files provided.
+
+[Auto Generated Docs](https://kuuuube.github.io/moth_filter/moth_filter/)
