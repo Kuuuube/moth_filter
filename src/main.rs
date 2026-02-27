@@ -216,6 +216,24 @@ fn main() {
     let moth_synonyms_count: usize = synonyms.iter().map(|x| x.1.len()).sum();
 
     for moth_entry in moth_entries.iter_mut() {
+        // eliminate any false positives in butterfly blacklist
+        // only genera and epithets appear to collide but check over all of them anyways
+        if let Some(family) = &moth_entry.classification.family {
+            butterfly_data.families.remove(family);
+        }
+        if let Some(subfamily) = &moth_entry.classification.subfamily {
+            butterfly_data.subfamilies.remove(subfamily);
+        }
+        if let Some(tribe) = &moth_entry.classification.tribe {
+            butterfly_data.tribes.remove(tribe);
+        }
+        if let Some(subribe) = &moth_entry.classification.subtribe {
+            butterfly_data.subtribes.remove(subribe);
+        }
+        butterfly_data.genera.remove(&moth_entry.classification.genus);
+        butterfly_data.epithets.remove(&moth_entry.classification.epithet);
+
+        // append synonyms
         moth_entry.synonyms = synonyms
             .get(&moth_entry.catalogue_of_life_taxon_id)
             .cloned();
