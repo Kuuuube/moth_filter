@@ -58,6 +58,9 @@ fn main() {
     let butterfly_output_file = File::create(butterfly_output_file_path).unwrap();
     let butterfly_output_file_zstd = File::create(&butterfly_output_file_path_zstd).unwrap();
 
+    let butterfly_collisions_output_file_path = "./output/butterfly_blacklist_collisions.json";
+    let butterfly_collisions_output_file = File::create(butterfly_collisions_output_file_path).unwrap();
+
     let mut bad_entry_count = 0;
     let mut moth_entries: Vec<SpeciesData> = Vec::new();
     let mut synonyms: HashMap<String, Vec<SynonymSpecies>> = HashMap::new();
@@ -215,23 +218,49 @@ fn main() {
     synonyms.retain(|key, _value| moth_ids.contains(key));
     let moth_synonyms_count: usize = synonyms.iter().map(|x| x.1.len()).sum();
 
+    let mut butterfly_collision_data: ButterflyBlacklist = Default::default();
+
     for moth_entry in moth_entries.iter_mut() {
         // eliminate any false positives in butterfly blacklist
         // only genera and epithets appear to collide but check over all of them anyways
         if let Some(family) = &moth_entry.classification.family {
-            butterfly_data.families.remove(&family.to_lowercase());
+            if butterfly_data.families.remove(&family.to_lowercase()) {
+                butterfly_collision_data.families.insert(family.clone());
+            }
         }
         if let Some(subfamily) = &moth_entry.classification.subfamily {
-            butterfly_data.subfamilies.remove(&subfamily.to_lowercase());
+            if butterfly_data.subfamilies.remove(&subfamily.to_lowercase()) {
+                butterfly_collision_data
+                    .subfamilies
+                    .insert(subfamily.clone());
+            }
         }
         if let Some(tribe) = &moth_entry.classification.tribe {
-            butterfly_data.tribes.remove(&tribe.to_lowercase());
+            if butterfly_data.tribes.remove(&tribe.to_lowercase()) {
+                butterfly_collision_data.tribes.insert(tribe.clone());
+            }
         }
-        if let Some(subribe) = &moth_entry.classification.subtribe {
-            butterfly_data.subtribes.remove(&subribe.to_lowercase());
+        if let Some(subtribe) = &moth_entry.classification.subtribe {
+            if butterfly_data.subtribes.remove(&subtribe.to_lowercase()) {
+                butterfly_collision_data.subtribes.insert(subtribe.clone());
+            }
         }
-        butterfly_data.genera.remove(&moth_entry.classification.genus.to_lowercase());
-        butterfly_data.epithets.remove(&moth_entry.classification.epithet.to_lowercase());
+        if butterfly_data
+            .genera
+            .remove(&moth_entry.classification.genus.to_lowercase())
+        {
+            butterfly_collision_data
+                .genera
+                .insert(moth_entry.classification.genus.clone());
+        }
+        if butterfly_data
+            .epithets
+            .remove(&moth_entry.classification.epithet.to_lowercase())
+        {
+            butterfly_collision_data
+                .epithets
+                .insert(moth_entry.classification.epithet.clone());
+        }
 
         // append synonyms
         moth_entry.synonyms = synonyms
@@ -256,18 +285,35 @@ fn main() {
     if let Err(write_error) = serde_json::to_writer_pretty(moth_output_file, &moth_entries) {
         dbg!(write_error);
     };
-    println!("Writing compressed moth data output to {}", moth_output_file_path_zstd);
+    println!(
+        "Writing compressed moth data output to {}",
+        moth_output_file_path_zstd
+    );
     if let Err(err) = write_zstd(moth_output_file_path, &moth_output_file_zstd) {
         eprintln!("{err}");
     };
 
-    println!("Writing butterfly blacklist output to {}", butterfly_output_file_path);
+    println!(
+        "Writing butterfly blacklist output to {}",
+        butterfly_output_file_path
+    );
     if let Err(write_error) = serde_json::to_writer_pretty(butterfly_output_file, &butterfly_data) {
         dbg!(write_error);
     };
-    println!("Writing compressed butterfly blacklist output to {}", butterfly_output_file_path_zstd);
+    println!(
+        "Writing compressed butterfly blacklist output to {}",
+        butterfly_output_file_path_zstd
+    );
     if let Err(err) = write_zstd(butterfly_output_file_path, &butterfly_output_file_zstd) {
         eprintln!("{err}");
+    };
+
+    println!(
+        "Writing butterfly blacklist collisions output to {}",
+        butterfly_collisions_output_file_path
+    );
+    if let Err(write_error) = serde_json::to_writer_pretty(butterfly_collisions_output_file, &butterfly_collision_data) {
+        dbg!(write_error);
     };
 }
 
