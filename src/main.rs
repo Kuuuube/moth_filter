@@ -48,16 +48,21 @@ fn main() {
         distribution_tsv_reader.deserialize::<DistributionTSVRaw>(),
     );
 
-    let output_file_path = "./output/moth_data.json";
-    let output_file_path_zstd = output_file_path.to_owned() + ".zst";
+    let moth_output_file_path = "./output/moth_data.json";
+    let moth_output_file_path_zstd = moth_output_file_path.to_owned() + ".zst";
+    let moth_output_file = File::create(moth_output_file_path).unwrap();
+    let moth_output_file_zstd = File::create(&moth_output_file_path_zstd).unwrap();
 
-    let output_file = File::create(output_file_path).unwrap();
-    let output_file_zstd = File::create(&output_file_path_zstd).unwrap();
+    let butterfly_output_file_path = "./output/butterfly_blacklist.json";
+    let butterfly_output_file_path_zstd = butterfly_output_file_path.to_owned() + ".zst";
+    let butterfly_output_file = File::create(butterfly_output_file_path).unwrap();
+    let butterfly_output_file_zstd = File::create(&butterfly_output_file_path_zstd).unwrap();
 
     let mut bad_entry_count = 0;
     let mut moth_entries: Vec<SpeciesData> = Vec::new();
     let mut synonyms: HashMap<String, Vec<SynonymSpecies>> = HashMap::new();
     let mut moth_ids: HashSet<String> = HashSet::new();
+    let mut butterfly_data: ButterflyBlacklist = Default::default();
 
     for tsv_reader_result in taxon_tsv {
         let Ok(taxon_tsv_data_raw) = tsv_reader_result else {
@@ -107,6 +112,27 @@ fn main() {
         if let Some(superfamily) = &taxon_tsv_data_raw.dwc_superfamily
             && superfamily == BUTTERFLY_SUPERFAMILY
         {
+            if let Some(family) = taxon_tsv_data_raw.dwc_family {
+                butterfly_data.families.insert(family);
+            }
+            if let Some(subfamily) = taxon_tsv_data_raw.dwc_subfamily {
+                butterfly_data.subfamilies.insert(subfamily);
+            }
+            if let Some(tribe) = taxon_tsv_data_raw.dwc_tribe {
+                butterfly_data.tribes.insert(tribe);
+            }
+            if let Some(subtribe) = taxon_tsv_data_raw.dwc_subtribe {
+                butterfly_data.subtribes.insert(subtribe);
+            }
+            if let Some(genus) = taxon_tsv_data_raw.dwc_genus {
+                butterfly_data.genera.insert(genus);
+            }
+            if let Some(genus) = taxon_tsv_data_raw.dwc_generic_name {
+                butterfly_data.genera.insert(genus);
+            }
+            if let Some(epithet) = taxon_tsv_data_raw.dwc_specific_epithet {
+                butterfly_data.epithets.insert(epithet);
+            }
             continue;
         }
 
@@ -208,12 +234,21 @@ fn main() {
         start_time.elapsed()
     );
 
-    println!("Writing output to {}", output_file_path);
-    if let Err(write_error) = serde_json::to_writer_pretty(output_file, &moth_entries) {
+    println!("Writing moth data output to {}", moth_output_file_path);
+    if let Err(write_error) = serde_json::to_writer_pretty(moth_output_file, &moth_entries) {
         dbg!(write_error);
     };
-    println!("Writing compressed output to {}", output_file_path_zstd);
-    if let Err(err) = write_zstd(output_file_path, &output_file_zstd) {
+    println!("Writing compressed moth data output to {}", moth_output_file_path_zstd);
+    if let Err(err) = write_zstd(moth_output_file_path, &moth_output_file_zstd) {
+        eprintln!("{err}");
+    };
+
+    println!("Writing butterfly blacklist output to {}", butterfly_output_file_path);
+    if let Err(write_error) = serde_json::to_writer_pretty(butterfly_output_file, &butterfly_data) {
+        dbg!(write_error);
+    };
+    println!("Writing compressed butterfly blacklist output to {}", butterfly_output_file_path_zstd);
+    if let Err(err) = write_zstd(butterfly_output_file_path, &butterfly_output_file_zstd) {
         eprintln!("{err}");
     };
 }

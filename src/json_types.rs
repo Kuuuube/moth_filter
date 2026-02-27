@@ -1,3 +1,5 @@
+use std::collections::HashSet;
+
 use serde::{Deserialize, Serialize};
 
 #[derive(Debug, Clone, Serialize, Deserialize)]
@@ -67,4 +69,14 @@ pub struct SynonymSpecies {
     pub catalogue_of_life_taxon_id: String,
     pub genus: String,
     pub epithet: String,
+}
+
+#[derive(Debug, Default, Serialize, Deserialize)]
+pub struct ButterflyBlacklist {
+    pub families: HashSet<String>,
+    pub subfamilies: HashSet<String>,
+    pub tribes: HashSet<String>,
+    pub subtribes: HashSet<String>,
+    pub genera: HashSet<String>,
+    pub epithets: HashSet<String>,
 }
