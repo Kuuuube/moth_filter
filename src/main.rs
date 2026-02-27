@@ -113,25 +113,25 @@ fn main() {
             && superfamily == BUTTERFLY_SUPERFAMILY
         {
             if let Some(family) = taxon_tsv_data_raw.dwc_family {
-                butterfly_data.families.insert(family);
+                butterfly_data.families.insert(family.to_lowercase());
             }
             if let Some(subfamily) = taxon_tsv_data_raw.dwc_subfamily {
-                butterfly_data.subfamilies.insert(subfamily);
+                butterfly_data.subfamilies.insert(subfamily.to_lowercase());
             }
             if let Some(tribe) = taxon_tsv_data_raw.dwc_tribe {
-                butterfly_data.tribes.insert(tribe);
+                butterfly_data.tribes.insert(tribe.to_lowercase());
             }
             if let Some(subtribe) = taxon_tsv_data_raw.dwc_subtribe {
-                butterfly_data.subtribes.insert(subtribe);
+                butterfly_data.subtribes.insert(subtribe.to_lowercase());
             }
             if let Some(genus) = taxon_tsv_data_raw.dwc_genus {
-                butterfly_data.genera.insert(genus);
+                butterfly_data.genera.insert(genus.to_lowercase());
             }
             if let Some(genus) = taxon_tsv_data_raw.dwc_generic_name {
-                butterfly_data.genera.insert(genus);
+                butterfly_data.genera.insert(genus.to_lowercase());
             }
             if let Some(epithet) = taxon_tsv_data_raw.dwc_specific_epithet {
-                butterfly_data.epithets.insert(epithet);
+                butterfly_data.epithets.insert(epithet.to_lowercase());
             }
             continue;
         }
@@ -219,19 +219,19 @@ fn main() {
         // eliminate any false positives in butterfly blacklist
         // only genera and epithets appear to collide but check over all of them anyways
         if let Some(family) = &moth_entry.classification.family {
-            butterfly_data.families.remove(family);
+            butterfly_data.families.remove(&family.to_lowercase());
         }
         if let Some(subfamily) = &moth_entry.classification.subfamily {
-            butterfly_data.subfamilies.remove(subfamily);
+            butterfly_data.subfamilies.remove(&subfamily.to_lowercase());
         }
         if let Some(tribe) = &moth_entry.classification.tribe {
-            butterfly_data.tribes.remove(tribe);
+            butterfly_data.tribes.remove(&tribe.to_lowercase());
         }
         if let Some(subribe) = &moth_entry.classification.subtribe {
-            butterfly_data.subtribes.remove(subribe);
+            butterfly_data.subtribes.remove(&subribe.to_lowercase());
         }
-        butterfly_data.genera.remove(&moth_entry.classification.genus);
-        butterfly_data.epithets.remove(&moth_entry.classification.epithet);
+        butterfly_data.genera.remove(&moth_entry.classification.genus.to_lowercase());
+        butterfly_data.epithets.remove(&moth_entry.classification.epithet.to_lowercase());
 
         // append synonyms
         moth_entry.synonyms = synonyms
