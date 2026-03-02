@@ -329,7 +329,14 @@ fn get_reversed_synonym_map(synonyms: &HashMap<String, Vec<SynonymSpecies>>) -> 
     let mut new_synonyms: HashMap<String, String> = Default::default();
     for (taxon_id, synonyms_data) in synonyms.iter() {
         for synonym_data in synonyms_data {
-            new_synonyms.insert(format!("{} {}", synonym_data.genus, synonym_data.epithet), taxon_id.to_string());
+            new_synonyms.insert(
+                format!(
+                    "{} {}",
+                    synonym_data.genus.to_lowercase(),
+                    synonym_data.epithet.to_lowercase()
+                ),
+                taxon_id.to_string(),
+            );
         }
     }
     return new_synonyms;
