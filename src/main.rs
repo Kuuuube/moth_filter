@@ -48,19 +48,6 @@ fn main() {
         distribution_tsv_reader.deserialize::<DistributionTSVRaw>(),
     );
 
-    let moth_output_file_path = "./output/moth_data.json";
-    let moth_output_file_path_zstd = moth_output_file_path.to_owned() + ".zst";
-    let moth_output_file = File::create(moth_output_file_path).unwrap();
-    let moth_output_file_zstd = File::create(&moth_output_file_path_zstd).unwrap();
-
-    let butterfly_output_file_path = "./output/butterfly_blacklist.json";
-    let butterfly_output_file_path_zstd = butterfly_output_file_path.to_owned() + ".zst";
-    let butterfly_output_file = File::create(butterfly_output_file_path).unwrap();
-    let butterfly_output_file_zstd = File::create(&butterfly_output_file_path_zstd).unwrap();
-
-    let butterfly_collisions_output_file_path = "./output/butterfly_blacklist_collisions.json";
-    let butterfly_collisions_output_file = File::create(butterfly_collisions_output_file_path).unwrap();
-
     let mut bad_entry_count = 0;
     let mut moth_entries: Vec<SpeciesData> = Vec::new();
     let mut synonyms: HashMap<String, Vec<SynonymSpecies>> = HashMap::new();
@@ -281,6 +268,10 @@ fn main() {
         start_time.elapsed()
     );
 
+    let moth_output_file_path = "./output/moth_data.json";
+    let moth_output_file_path_zstd = moth_output_file_path.to_owned() + ".zst";
+    let moth_output_file = File::create(moth_output_file_path).unwrap();
+    let moth_output_file_zstd = File::create(&moth_output_file_path_zstd).unwrap();
     println!("Writing moth data output to {}", moth_output_file_path);
     if let Err(write_error) = serde_json::to_writer_pretty(moth_output_file, &moth_entries) {
         dbg!(write_error);
@@ -293,6 +284,26 @@ fn main() {
         eprintln!("{err}");
     };
 
+    let moth_synonyms_output_file_path = "./output/moth_synonyms.json";
+    let moth_synonyms_output_file_path_zstd = moth_synonyms_output_file_path.to_owned() + ".zst";
+    let moth_synonyms_output_file = File::create(moth_synonyms_output_file_path).unwrap();
+    let moth_synonyms_output_file_zstd = File::create(&moth_synonyms_output_file_path_zstd).unwrap();
+    println!("Writing moth synonyms output to {}", moth_synonyms_output_file_path);
+    if let Err(write_error) = serde_json::to_writer_pretty(moth_synonyms_output_file, &synonyms) {
+        dbg!(write_error);
+    };
+    println!(
+        "Writing compressed moth synonyms output to {}",
+        moth_synonyms_output_file_path_zstd
+    );
+    if let Err(err) = write_zstd(moth_synonyms_output_file_path, &moth_synonyms_output_file_zstd) {
+        eprintln!("{err}");
+    };
+
+    let butterfly_output_file_path = "./output/butterfly_blacklist.json";
+    let butterfly_output_file_path_zstd = butterfly_output_file_path.to_owned() + ".zst";
+    let butterfly_output_file = File::create(butterfly_output_file_path).unwrap();
+    let butterfly_output_file_zstd = File::create(&butterfly_output_file_path_zstd).unwrap();
     println!(
         "Writing butterfly blacklist output to {}",
         butterfly_output_file_path
@@ -308,6 +319,8 @@ fn main() {
         eprintln!("{err}");
     };
 
+    let butterfly_collisions_output_file_path = "./output/butterfly_blacklist_collisions.json";
+    let butterfly_collisions_output_file = File::create(butterfly_collisions_output_file_path).unwrap();
     println!(
         "Writing butterfly blacklist collisions output to {}",
         butterfly_collisions_output_file_path
