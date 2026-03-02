@@ -236,6 +236,8 @@ fn main() {
             .cloned();
     }
 
+    let reversed_synonyms_data = get_reversed_synonym_map(&synonyms);
+
     println!(
         "Found {} moths and {} synonym species",
         moth_entries.len(),
@@ -274,7 +276,7 @@ fn main() {
         "Writing moth synonyms output to {}",
         moth_synonyms_output_file_path
     );
-    if let Err(write_error) = serde_json::to_writer_pretty(moth_synonyms_output_file, &synonyms) {
+    if let Err(write_error) = serde_json::to_writer_pretty(moth_synonyms_output_file, &reversed_synonyms_data) {
         dbg!(write_error);
     };
     println!(
@@ -319,6 +321,16 @@ fn main() {
     {
         dbg!(write_error);
     };
+}
+
+fn get_reversed_synonym_map(synonyms: &HashMap<String, Vec<SynonymSpecies>>) -> HashMap<String, String> {
+    let mut new_synonyms: HashMap<String, String> = Default::default();
+    for (taxon_id, synonyms_data) in synonyms.iter() {
+        for synonym_data in synonyms_data {
+            new_synonyms.insert(format!("{} {}", synonym_data.genus, synonym_data.epithet), taxon_id.to_string());
+        }
+    }
+    return new_synonyms;
 }
 
 fn write_zstd(input_file_path: &str, mut output_file: &File) -> Result<(), Box<dyn Error>> {
