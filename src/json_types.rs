@@ -1,4 +1,4 @@
-use std::collections::HashSet;
+use std::collections::{HashMap, HashSet};
 
 use serde::{Deserialize, Serialize};
 
@@ -80,3 +80,5 @@ pub struct ButterflyBlacklist {
     pub genera: HashSet<String>,
     pub epithets: HashSet<String>,
 }
+
+pub type MothSynonyms = HashMap<String, String>;

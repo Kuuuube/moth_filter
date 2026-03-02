@@ -323,7 +323,7 @@ fn main() {
     };
 }
 
-fn get_reversed_synonym_map(synonyms: &HashMap<String, Vec<SynonymSpecies>>) -> HashMap<String, String> {
+fn get_reversed_synonym_map(synonyms: &HashMap<String, Vec<SynonymSpecies>>) -> MothSynonyms {
     let mut new_synonyms: HashMap<String, String> = Default::default();
     for (taxon_id, synonyms_data) in synonyms.iter() {
         for synonym_data in synonyms_data {
