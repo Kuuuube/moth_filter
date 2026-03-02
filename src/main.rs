@@ -10,6 +10,7 @@ use crate::{addin_tsv_hashmaps::VernacularHashKey, json_types::*, tsv_types::*};
 
 mod addin_tsv_hashmaps;
 mod json_types;
+mod tsv_parsing;
 mod tsv_types;
 
 const MOTH_ORDER: &str = "Lepidoptera";
@@ -24,29 +25,7 @@ fn main() {
         .from_reader(File::open("./data/Taxon.tsv").unwrap());
     let taxon_tsv = taxon_tsv_reader.deserialize::<TaxonTSVRaw>();
 
-    let mut vernacular_tsv_reader = csv::ReaderBuilder::new()
-        .delimiter(b'\t')
-        .quoting(false)
-        .from_reader(File::open("./data/VernacularName.tsv").unwrap());
-    let vernacular_tsv = addin_tsv_hashmaps::vernacular_to_hashmap(
-        vernacular_tsv_reader.deserialize::<VernacularNameTSVRaw>(),
-    );
-
-    let mut species_profile_tsv_reader = csv::ReaderBuilder::new()
-        .delimiter(b'\t')
-        .quoting(false)
-        .from_reader(File::open("./data/SpeciesProfile.tsv").unwrap());
-    let species_profile_tsv = addin_tsv_hashmaps::species_profile_to_hashmap(
-        species_profile_tsv_reader.deserialize::<SpeciesProfileTSVRaw>(),
-    );
-
-    let mut distribution_tsv_reader = csv::ReaderBuilder::new()
-        .delimiter(b'\t')
-        .quoting(false)
-        .from_reader(File::open("./data/Distribution.tsv").unwrap());
-    let distribution_tsv = addin_tsv_hashmaps::distribution_to_hashmap(
-        distribution_tsv_reader.deserialize::<DistributionTSVRaw>(),
-    );
+    let tsv_maps = tsv_parsing::parse_tsvs();
 
     let mut bad_entry_count = 0;
     let mut moth_entries: Vec<SpeciesData> = Vec::new();
@@ -128,11 +107,12 @@ fn main() {
 
         moth_ids.insert(taxon_tsv_data_raw.dwc_taxon_id.clone());
 
-        let common_name = vernacular_tsv.get(&VernacularHashKey {
+        let common_name = tsv_maps.vernacular_name.get(&VernacularHashKey {
             language_code: "eng".to_string(),
             taxon_id: taxon_tsv_data_raw.dwc_taxon_id.clone(),
         });
-        let species_profile = species_profile_tsv
+        let species_profile = tsv_maps
+            .species_profile
             .get(&taxon_tsv_data_raw.dwc_taxon_id)
             .and_then(|x| {
                 Some(SpeciesProfile {
@@ -142,7 +122,8 @@ fn main() {
                 })
             });
 
-        let distribution = distribution_tsv
+        let distribution = tsv_maps
+            .distribution
             .get(&taxon_tsv_data_raw.dwc_taxon_id)
             .and_then(|x| {
                 let threat_status = x.iucn_threat_status.as_ref().and_then(|x| match x {
@@ -287,8 +268,12 @@ fn main() {
     let moth_synonyms_output_file_path = "./output/moth_synonyms.json";
     let moth_synonyms_output_file_path_zstd = moth_synonyms_output_file_path.to_owned() + ".zst";
     let moth_synonyms_output_file = File::create(moth_synonyms_output_file_path).unwrap();
-    let moth_synonyms_output_file_zstd = File::create(&moth_synonyms_output_file_path_zstd).unwrap();
-    println!("Writing moth synonyms output to {}", moth_synonyms_output_file_path);
+    let moth_synonyms_output_file_zstd =
+        File::create(&moth_synonyms_output_file_path_zstd).unwrap();
+    println!(
+        "Writing moth synonyms output to {}",
+        moth_synonyms_output_file_path
+    );
     if let Err(write_error) = serde_json::to_writer_pretty(moth_synonyms_output_file, &synonyms) {
         dbg!(write_error);
     };
@@ -296,7 +281,10 @@ fn main() {
         "Writing compressed moth synonyms output to {}",
         moth_synonyms_output_file_path_zstd
     );
-    if let Err(err) = write_zstd(moth_synonyms_output_file_path, &moth_synonyms_output_file_zstd) {
+    if let Err(err) = write_zstd(
+        moth_synonyms_output_file_path,
+        &moth_synonyms_output_file_zstd,
+    ) {
         eprintln!("{err}");
     };
 
@@ -320,12 +308,15 @@ fn main() {
     };
 
     let butterfly_collisions_output_file_path = "./output/butterfly_blacklist_collisions.json";
-    let butterfly_collisions_output_file = File::create(butterfly_collisions_output_file_path).unwrap();
+    let butterfly_collisions_output_file =
+        File::create(butterfly_collisions_output_file_path).unwrap();
     println!(
         "Writing butterfly blacklist collisions output to {}",
         butterfly_collisions_output_file_path
     );
-    if let Err(write_error) = serde_json::to_writer_pretty(butterfly_collisions_output_file, &butterfly_collision_data) {
+    if let Err(write_error) =
+        serde_json::to_writer_pretty(butterfly_collisions_output_file, &butterfly_collision_data)
+    {
         dbg!(write_error);
     };
 }
