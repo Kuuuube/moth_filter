@@ -276,7 +276,9 @@ fn main() {
         "Writing moth synonyms output to {}",
         moth_synonyms_output_file_path
     );
-    if let Err(write_error) = serde_json::to_writer_pretty(moth_synonyms_output_file, &reversed_synonyms_data) {
+    if let Err(write_error) =
+        serde_json::to_writer_pretty(moth_synonyms_output_file, &reversed_synonyms_data)
+    {
         dbg!(write_error);
     };
     println!(
