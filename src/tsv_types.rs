@@ -32,7 +32,7 @@ pub struct TaxonTSVRaw {
     #[serde(rename = "dwc:specificEpithet")]
     pub dwc_specific_epithet: Option<String>,
     #[serde(rename = "dwc:infraspecificEpithet")]
-    pub dwc_infraspecific_epithet: String,
+    pub dwc_infraspecific_epithet: Option<String>,
     #[serde(rename = "dwc:cultivarEpithet")]
     pub dwc_cultivar_epithet: String,
     #[serde(rename = "dwc:nameAccordingTo")]

@@ -30,6 +30,7 @@ fn main() {
     let mut bad_entry_count = 0;
     let mut moth_entries: Vec<SpeciesData> = Vec::new();
     let mut synonyms: HashMap<String, Vec<SynonymSpecies>> = HashMap::new();
+    let mut subspecies_map: HashMap<String, Vec<SubSpecies>> = HashMap::new();
     let mut moth_ids: HashSet<String> = HashSet::new();
     let mut butterfly_data: ButterflyBlacklist = Default::default();
 
@@ -41,6 +42,33 @@ fn main() {
 
         // filter out not species before checking for synonyms
         if taxon_tsv_data_raw.dwc_taxon_rank != "species" {
+            if taxon_tsv_data_raw.dwc_taxon_rank == "subspecies" {
+                let Some(genus) = taxon_tsv_data_raw
+                    .dwc_genus
+                    .or(taxon_tsv_data_raw.dwc_generic_name)
+                else {
+                    continue;
+                };
+                let Some(specific) = taxon_tsv_data_raw.dwc_specific_epithet else {
+                    continue;
+                };
+                let Some(subspecific) = taxon_tsv_data_raw.dwc_infraspecific_epithet else {
+                    continue;
+                };
+                let primary_taxon_id = taxon_tsv_data_raw.dwc_accepted_name_usage_id;
+                let subspecies = SubSpecies {
+                    catalogue_of_life_taxon_id: taxon_tsv_data_raw.dwc_taxon_id,
+                    genus: genus,
+                    specific: specific,
+                    subspecific: subspecific,
+                };
+                subspecies_map
+                    .entry(primary_taxon_id)
+                    .and_modify(|x| {
+                        x.push(subspecies.clone());
+                    })
+                    .or_insert(vec![subspecies]);
+            }
             continue;
         }
 
@@ -179,12 +207,15 @@ fn main() {
             species_profile: species_profile,
             distribution: distribution,
             synonyms: None,
+            subspecies: None,
             published_in: taxon_tsv_data_raw.dwc_name_published_in,
         });
     }
 
     synonyms.retain(|key, _value| moth_ids.contains(key));
+    subspecies_map.retain(|key, _value| moth_ids.contains(key));
     let moth_synonyms_count: usize = synonyms.iter().map(|x| x.1.len()).sum();
+    let moth_subspecies_count: usize = subspecies_map.iter().map(|x| x.1.len()).sum();
 
     let mut butterfly_collision_data: ButterflyBlacklist = Default::default();
 
@@ -234,14 +265,20 @@ fn main() {
         moth_entry.synonyms = synonyms
             .get(&moth_entry.catalogue_of_life_taxon_id)
             .cloned();
+
+        // append subspecies
+        moth_entry.subspecies = subspecies_map
+            .get(&moth_entry.catalogue_of_life_taxon_id)
+            .cloned();
     }
 
     let reversed_synonyms_data = get_reversed_synonym_map(&synonyms);
 
     println!(
-        "Found {} moths and {} synonym species",
+        "Found {} moths, {} synonym species, and {} subspecies",
         moth_entries.len(),
         moth_synonyms_count,
+        moth_subspecies_count,
     );
     if bad_entry_count > 0 {
         println!("Failed to parse {bad_entry_count} entries");

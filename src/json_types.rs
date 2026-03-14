@@ -15,6 +15,8 @@ pub struct SpeciesData {
     #[serde(skip_serializing_if = "Option::is_none")]
     pub synonyms: Option<Vec<SynonymSpecies>>,
     #[serde(skip_serializing_if = "Option::is_none")]
+    pub subspecies: Option<Vec<SubSpecies>>,
+    #[serde(skip_serializing_if = "Option::is_none")]
     pub published_in: Option<String>,
 }
 
@@ -71,6 +73,14 @@ pub struct SynonymSpecies {
     pub specific: String,
 }
 
+#[derive(Debug, Clone, Serialize, Deserialize)]
+pub struct SubSpecies {
+    pub catalogue_of_life_taxon_id: String,
+    pub genus: String,
+    pub specific: String,
+    pub subspecific: String,
+}
+
 #[derive(Debug, Default, Serialize, Deserialize)]
 pub struct ButterflyBlacklist {
     pub families: HashSet<String>,
@@ -82,3 +92,4 @@ pub struct ButterflyBlacklist {
 }
 
 pub type MothSynonyms = HashMap<String, String>;
+pub type MothSubSpecies = HashMap<String, String>;
