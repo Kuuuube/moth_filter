@@ -92,4 +92,3 @@ pub struct ButterflyBlacklist {
 }
 
 pub type MothSynonyms = HashMap<String, String>;
-pub type MothSubSpecies = HashMap<String, String>;

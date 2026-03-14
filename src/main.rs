@@ -55,7 +55,7 @@ fn main() {
                 let Some(subspecific) = taxon_tsv_data_raw.dwc_infraspecific_epithet else {
                     continue;
                 };
-                let primary_taxon_id = taxon_tsv_data_raw.dwc_accepted_name_usage_id;
+                let parent_taxon_id = taxon_tsv_data_raw.dwc_parent_name_usage_id; // for a subspecies the parent id should always be the species id
                 let subspecies = SubSpecies {
                     catalogue_of_life_taxon_id: taxon_tsv_data_raw.dwc_taxon_id,
                     genus: genus,
@@ -63,7 +63,7 @@ fn main() {
                     subspecific: subspecific,
                 };
                 subspecies_map
-                    .entry(primary_taxon_id)
+                    .entry(parent_taxon_id)
                     .and_modify(|x| {
                         x.push(subspecies.clone());
                     })
