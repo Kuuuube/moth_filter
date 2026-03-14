@@ -49,12 +49,12 @@ fn main() {
             TaxonomicStatusRaw::Synonym | TaxonomicStatusRaw::AmbiguousSynonym => {
                 let primary_taxon_id = taxon_tsv_data_raw.dwc_accepted_name_usage_id;
                 if let Some(genus) = taxon_tsv_data_raw.dwc_generic_name
-                    && let Some(epithet) = taxon_tsv_data_raw.dwc_specific_epithet
+                    && let Some(specific) = taxon_tsv_data_raw.dwc_specific_epithet
                 {
                     let synonym = SynonymSpecies {
                         catalogue_of_life_taxon_id: taxon_tsv_data_raw.dwc_taxon_id,
                         genus: genus,
-                        epithet: epithet,
+                        specific: specific,
                     };
                     synonyms
                         .entry(primary_taxon_id)
@@ -99,8 +99,8 @@ fn main() {
             if let Some(genus) = taxon_tsv_data_raw.dwc_generic_name {
                 butterfly_data.genera.insert(genus.to_lowercase());
             }
-            if let Some(epithet) = taxon_tsv_data_raw.dwc_specific_epithet {
-                butterfly_data.epithets.insert(epithet.to_lowercase());
+            if let Some(specific) = taxon_tsv_data_raw.dwc_specific_epithet {
+                butterfly_data.specifics.insert(specific.to_lowercase());
             }
             continue;
         }
@@ -159,7 +159,7 @@ fn main() {
             },
         };
 
-        let Some(epithet_checked) = taxon_tsv_data_raw.dwc_specific_epithet else {
+        let Some(specific_checked) = taxon_tsv_data_raw.dwc_specific_epithet else {
             bad_entry_count += 1;
             continue;
         };
@@ -173,7 +173,7 @@ fn main() {
                 tribe: taxon_tsv_data_raw.dwc_tribe,
                 subtribe: taxon_tsv_data_raw.dwc_subtribe,
                 genus: genus_fixed,
-                epithet: epithet_checked,
+                specific: specific_checked,
             },
             common_names: common_name.cloned(),
             species_profile: species_profile,
@@ -190,7 +190,7 @@ fn main() {
 
     for moth_entry in moth_entries.iter_mut() {
         // eliminate any false positives in butterfly blacklist
-        // only genera and epithets appear to collide but check over all of them anyways
+        // only genera and specifics appear to collide but check over all of them anyways
         if let Some(family) = &moth_entry.classification.family {
             if butterfly_data.families.remove(&family.to_lowercase()) {
                 butterfly_collision_data.families.insert(family.clone());
@@ -222,12 +222,12 @@ fn main() {
                 .insert(moth_entry.classification.genus.clone());
         }
         if butterfly_data
-            .epithets
-            .remove(&moth_entry.classification.epithet.to_lowercase())
+            .specifics
+            .remove(&moth_entry.classification.specific.to_lowercase())
         {
             butterfly_collision_data
-                .epithets
-                .insert(moth_entry.classification.epithet.clone());
+                .specifics
+                .insert(moth_entry.classification.specific.clone());
         }
 
         // append synonyms
@@ -333,7 +333,7 @@ fn get_reversed_synonym_map(synonyms: &HashMap<String, Vec<SynonymSpecies>>) -> 
                 format!(
                     "{} {}",
                     synonym_data.genus.to_lowercase(),
-                    synonym_data.epithet.to_lowercase()
+                    synonym_data.specific.to_lowercase()
                 ),
                 taxon_id.to_string(),
             );

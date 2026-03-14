@@ -2,7 +2,7 @@
 
 Extract only moth species information from Catalogue of Life's database release.
 
-A list of classifications for butterflies is also provided for easily determining butterfly or moth when the superfamily is not available. But beware filtering solely based on genus or epithet, there are many colliding genus and epithet names between butterflies and moths. All collisions have been removed from the butterfly blacklist.
+A list of classifications for butterflies is also provided for easily determining butterfly or moth when the superfamily is not available. But beware filtering solely based on genus or specific name, there are many colliding genus and specific names between butterflies and moths. All collisions have been removed from the butterfly blacklist.
 
 ## Filtering
 

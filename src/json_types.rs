@@ -49,7 +49,7 @@ pub struct SpeciesProfile {
 
 #[derive(Debug, Clone, Serialize, Deserialize)]
 pub struct ScientificClassification {
-    // somehow any of these (even genus and epithet) can be empty for a species
+    // somehow any of these (even genus and specific name) can be empty for a species
     #[serde(skip_serializing_if = "Option::is_none")]
     pub superfamily: Option<String>,
     #[serde(skip_serializing_if = "Option::is_none")]
@@ -61,14 +61,14 @@ pub struct ScientificClassification {
     #[serde(skip_serializing_if = "Option::is_none")]
     pub subtribe: Option<String>,
     pub genus: String,
-    pub epithet: String,
+    pub specific: String,
 }
 
 #[derive(Debug, Clone, Serialize, Deserialize)]
 pub struct SynonymSpecies {
     pub catalogue_of_life_taxon_id: String,
     pub genus: String,
-    pub epithet: String,
+    pub specific: String,
 }
 
 #[derive(Debug, Default, Serialize, Deserialize)]
@@ -78,7 +78,7 @@ pub struct ButterflyBlacklist {
     pub tribes: HashSet<String>,
     pub subtribes: HashSet<String>,
     pub genera: HashSet<String>,
-    pub epithets: HashSet<String>,
+    pub specifics: HashSet<String>,
 }
 
 pub type MothSynonyms = HashMap<String, String>;
