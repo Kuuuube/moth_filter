@@ -202,6 +202,7 @@ fn main() {
                 subtribe: taxon_tsv_data_raw.dwc_subtribe,
                 genus: genus_fixed,
                 specific: specific_checked,
+                subspecific: None,
             },
             common_names: common_name.cloned(),
             species_profile: species_profile,
