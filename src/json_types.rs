@@ -73,6 +73,7 @@ pub struct SynonymSpecies {
     pub catalogue_of_life_taxon_id: String,
     pub genus: String,
     pub specific: String,
+    pub subspecific: Option<String>,
 }
 
 #[derive(Debug, Clone, Serialize, Deserialize)]
@@ -91,6 +92,7 @@ pub struct ButterflyBlacklist {
     pub subtribes: HashSet<String>,
     pub genera: HashSet<String>,
     pub specifics: HashSet<String>,
+    pub subspecifics: HashSet<String>,
 }
 
 pub type MothSynonyms = HashMap<String, String>;

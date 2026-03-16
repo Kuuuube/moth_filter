@@ -45,22 +45,24 @@ fn main() {
             if taxon_tsv_data_raw.dwc_taxon_rank == "subspecies" {
                 let Some(genus) = taxon_tsv_data_raw
                     .dwc_genus
-                    .or(taxon_tsv_data_raw.dwc_generic_name)
+                    .as_ref()
+                    .or(taxon_tsv_data_raw.dwc_generic_name.as_ref())
                 else {
                     continue;
                 };
-                let Some(specific) = taxon_tsv_data_raw.dwc_specific_epithet else {
+                let Some(specific) = taxon_tsv_data_raw.dwc_specific_epithet.as_ref() else {
                     continue;
                 };
-                let Some(subspecific) = taxon_tsv_data_raw.dwc_infraspecific_epithet else {
+                let Some(subspecific) = taxon_tsv_data_raw.dwc_infraspecific_epithet.as_ref()
+                else {
                     continue;
                 };
                 let parent_taxon_id = taxon_tsv_data_raw.dwc_parent_name_usage_id; // for a subspecies the parent id should always be the species id
                 let subspecies = SubSpecies {
-                    catalogue_of_life_taxon_id: taxon_tsv_data_raw.dwc_taxon_id,
-                    genus: genus,
-                    specific: specific,
-                    subspecific: subspecific,
+                    catalogue_of_life_taxon_id: taxon_tsv_data_raw.dwc_taxon_id.clone(),
+                    genus: genus.to_string(),
+                    specific: specific.to_string(),
+                    subspecific: subspecific.to_string(),
                 };
                 subspecies_map
                     .entry(parent_taxon_id)
@@ -68,8 +70,9 @@ fn main() {
                         x.push(subspecies.clone());
                     })
                     .or_insert(vec![subspecies]);
+            } else {
+                continue;
             }
-            continue;
         }
 
         // synonyms have nearly no data and will never be detected as a moth, run before moth check and filter out non moths later
@@ -83,6 +86,7 @@ fn main() {
                         catalogue_of_life_taxon_id: taxon_tsv_data_raw.dwc_taxon_id,
                         genus: genus,
                         specific: specific,
+                        subspecific: taxon_tsv_data_raw.dwc_infraspecific_epithet,
                     };
                     synonyms
                         .entry(primary_taxon_id)
@@ -129,6 +133,11 @@ fn main() {
             }
             if let Some(specific) = taxon_tsv_data_raw.dwc_specific_epithet {
                 butterfly_data.specifics.insert(specific.to_lowercase());
+            }
+            if let Some(subspecific) = taxon_tsv_data_raw.dwc_infraspecific_epithet {
+                butterfly_data
+                    .subspecifics
+                    .insert(subspecific.to_lowercase());
             }
             continue;
         }
@@ -202,7 +211,7 @@ fn main() {
                 subtribe: taxon_tsv_data_raw.dwc_subtribe,
                 genus: genus_fixed,
                 specific: specific_checked,
-                subspecific: None,
+                subspecific: taxon_tsv_data_raw.dwc_infraspecific_epithet,
             },
             common_names: common_name.cloned(),
             species_profile: species_profile,
@@ -260,6 +269,16 @@ fn main() {
             butterfly_collision_data
                 .specifics
                 .insert(moth_entry.classification.specific.clone());
+        }
+        if let Some(subspecific) = &moth_entry.classification.subspecific {
+            if butterfly_data
+                .subspecifics
+                .remove(&subspecific.to_lowercase())
+            {
+                butterfly_collision_data
+                    .subspecifics
+                    .insert(subspecific.clone());
+            }
         }
 
         // append synonyms
@@ -369,10 +388,18 @@ fn get_reversed_synonym_map(synonyms: &HashMap<String, Vec<SynonymSpecies>>) -> 
         for synonym_data in synonyms_data {
             new_synonyms.insert(
                 format!(
-                    "{} {}",
+                    "{} {} {}",
                     synonym_data.genus.to_lowercase(),
-                    synonym_data.specific.to_lowercase()
-                ),
+                    synonym_data.specific.to_lowercase(),
+                    synonym_data
+                        .subspecific
+                        .as_ref()
+                        .cloned()
+                        .unwrap_or_default()
+                        .to_lowercase(),
+                )
+                .trim()
+                .to_string(),
                 taxon_id.to_string(),
             );
         }
