@@ -73,6 +73,7 @@ pub struct SynonymSpecies {
     pub catalogue_of_life_taxon_id: String,
     pub genus: String,
     pub specific: String,
+    #[serde(skip_serializing_if = "Option::is_none")]
     pub subspecific: Option<String>,
 }
 
