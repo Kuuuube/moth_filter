@@ -1,6 +1,7 @@
 use std::{collections::HashMap, fs::File};
 
 use crate::{
+    CATALOGUE_OF_LIFE_DATA_DIR,
     addin_tsv_hashmaps::{self, VernacularHashKey},
     tsv_types::*,
 };
@@ -9,7 +10,9 @@ pub fn parse_tsvs() -> TSVMaps {
     let mut vernacular_tsv_reader = csv::ReaderBuilder::new()
         .delimiter(b'\t')
         .quoting(false)
-        .from_reader(File::open("./data/VernacularName.tsv").unwrap());
+        .from_reader(
+            File::open(format!("{CATALOGUE_OF_LIFE_DATA_DIR}/VernacularName.tsv")).unwrap(),
+        );
     let vernacular_tsv = addin_tsv_hashmaps::vernacular_to_hashmap(
         vernacular_tsv_reader.deserialize::<VernacularNameTSVRaw>(),
     );
@@ -17,7 +20,9 @@ pub fn parse_tsvs() -> TSVMaps {
     let mut species_profile_tsv_reader = csv::ReaderBuilder::new()
         .delimiter(b'\t')
         .quoting(false)
-        .from_reader(File::open("./data/SpeciesProfile.tsv").unwrap());
+        .from_reader(
+            File::open(format!("{CATALOGUE_OF_LIFE_DATA_DIR}/SpeciesProfile.tsv")).unwrap(),
+        );
     let species_profile_tsv = addin_tsv_hashmaps::species_profile_to_hashmap(
         species_profile_tsv_reader.deserialize::<SpeciesProfileTSVRaw>(),
     );
@@ -25,7 +30,7 @@ pub fn parse_tsvs() -> TSVMaps {
     let mut distribution_tsv_reader = csv::ReaderBuilder::new()
         .delimiter(b'\t')
         .quoting(false)
-        .from_reader(File::open("./data/Distribution.tsv").unwrap());
+        .from_reader(File::open(format!("{CATALOGUE_OF_LIFE_DATA_DIR}/Distribution.tsv")).unwrap());
     let distribution_tsv = addin_tsv_hashmaps::distribution_to_hashmap(
         distribution_tsv_reader.deserialize::<DistributionTSVRaw>(),
     );

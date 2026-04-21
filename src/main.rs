@@ -16,13 +16,15 @@ mod tsv_types;
 const MOTH_ORDER: &str = "Lepidoptera";
 const BUTTERFLY_SUPERFAMILY: &str = "Papilionoidea";
 
+const CATALOGUE_OF_LIFE_DATA_DIR: &str = "./data/col";
+
 fn main() {
     let start_time = Instant::now();
 
     let mut taxon_tsv_reader = csv::ReaderBuilder::new()
         .delimiter(b'\t')
         .quoting(false)
-        .from_reader(File::open("./data/Taxon.tsv").unwrap());
+        .from_reader(File::open(format!("{CATALOGUE_OF_LIFE_DATA_DIR}/Taxon.tsv")).unwrap());
     let taxon_tsv = taxon_tsv_reader.deserialize::<TaxonTSVRaw>();
 
     let tsv_maps = tsv_parsing::parse_tsvs();
