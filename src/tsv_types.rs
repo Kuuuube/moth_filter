@@ -1,5 +1,7 @@
 use serde::Deserialize;
 
+use crate::json_types::ThreatStatus;
+
 #[derive(Debug, Deserialize)]
 #[allow(unused)]
 pub struct COLTaxonTSVRaw {
@@ -229,4 +231,21 @@ pub enum IUCNThreatStatusRaw {
     #[serde(rename = "Data Deficient")]
     #[serde(alias = "data deficient")]
     DataDeficient,
+}
+
+impl IUCNThreatStatusRaw {
+    pub fn into_threatstatus(&self) -> Option<ThreatStatus> {
+        match self {
+            IUCNThreatStatusRaw::LeastConcern => Some(ThreatStatus::LeastConcern),
+            IUCNThreatStatusRaw::ConservationDependent => Some(ThreatStatus::ConservationDependent),
+            IUCNThreatStatusRaw::NearThreatened => Some(ThreatStatus::NearThreatened),
+            IUCNThreatStatusRaw::Vulnerable => Some(ThreatStatus::Vulnerable),
+            IUCNThreatStatusRaw::Endangered => Some(ThreatStatus::Endangered),
+            IUCNThreatStatusRaw::CriticallyEndangered => Some(ThreatStatus::CriticallyEndangered),
+            IUCNThreatStatusRaw::ExtinctInTheWild => Some(ThreatStatus::ExtinctInTheWild),
+            IUCNThreatStatusRaw::Extinct => Some(ThreatStatus::Extinct),
+            IUCNThreatStatusRaw::NotEvaluated => None,
+            IUCNThreatStatusRaw::DataDeficient => None,
+        }
+    }
 }

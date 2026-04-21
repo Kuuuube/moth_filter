@@ -168,20 +168,7 @@ fn main() {
             .distribution
             .get(&taxon_tsv_data_raw.dwc_taxon_id)
             .and_then(|x| {
-                let threat_status = x.iucn_threat_status.as_ref().and_then(|x| match x {
-                    IUCNThreatStatusRaw::LeastConcern => Some(ThreatStatus::LeastConcern),
-                    IUCNThreatStatusRaw::ConservationDependent => Some(ThreatStatus::ConservationDependent),
-                    IUCNThreatStatusRaw::NearThreatened => Some(ThreatStatus::NearThreatened),
-                    IUCNThreatStatusRaw::Vulnerable => Some(ThreatStatus::Vulnerable),
-                    IUCNThreatStatusRaw::Endangered => Some(ThreatStatus::Endangered),
-                    IUCNThreatStatusRaw::CriticallyEndangered => {
-                        Some(ThreatStatus::CriticallyEndangered)
-                    }
-                    IUCNThreatStatusRaw::ExtinctInTheWild => Some(ThreatStatus::ExtinctInTheWild),
-                    IUCNThreatStatusRaw::Extinct => Some(ThreatStatus::Extinct),
-                    IUCNThreatStatusRaw::NotEvaluated => None,
-                    IUCNThreatStatusRaw::DataDeficient => None,
-                });
+                let threat_status = x.iucn_threat_status.as_ref().and_then(|x| x.into_threatstatus());
                 if x.dwc_locality.is_none() && threat_status.is_none() {
                     return None;
                 }
