@@ -31,6 +31,8 @@ pub struct Distribution {
 #[derive(Debug, Clone, Serialize, Deserialize)]
 pub enum ThreatStatus {
     LeastConcern,
+    ConservationDependent,
+    NearThreatened,
     Vulnerable,
     Endangered,
     CriticallyEndangered,

@@ -125,7 +125,7 @@ pub struct COLDistributionTSVRaw {
     #[serde(rename = "dwc:degreeOfEstablishment")]
     pub dwc_degree_of_establishment: String,
     #[serde(rename = "iucn:threatStatus")]
-    pub iucn_threat_status: Option<COLThreatStatusRaw>,
+    pub iucn_threat_status: Option<IUCNThreatStatusRaw>,
     #[serde(rename = "dwc:pathway")]
     pub dwc_pathway: String,
     #[serde(rename = "dwc:lifeStage")]
@@ -142,26 +142,6 @@ pub struct COLDistributionTSVRaw {
     pub dcterms_source: String,
     #[serde(rename = "clb:merged")]
     pub clb_merged: String,
-}
-
-#[derive(Debug, Deserialize)]
-pub enum COLThreatStatusRaw {
-    #[serde(rename = "least concern")]
-    LeastConcern,
-    #[serde(rename = "vulnerable")]
-    Vulnerable,
-    #[serde(rename = "endangered")]
-    Endangered,
-    #[serde(rename = "critically endangered")]
-    CriticallyEndangered,
-    #[serde(rename = "extinct in the wild")]
-    ExtinctInTheWild,
-    #[serde(rename = "extinct")]
-    Extinct,
-    #[serde(rename = "not evaluated")]
-    NotEvaluated,
-    #[serde(rename = "data deficient")]
-    DataDeficient,
 }
 
 #[derive(Debug, Deserialize)]
@@ -212,7 +192,41 @@ pub struct IUCNDistributionTXTRaw {
     pub country_code: String,
     pub locality: String,
     #[serde(rename = "threatStatus")]
-    pub threat_status: String,
+    pub threat_status: IUCNThreatStatusRaw,
     #[serde(rename = "occurrenceStatus")]
     pub occurrence_status: String,
+}
+
+#[derive(Debug, Deserialize)]
+pub enum IUCNThreatStatusRaw {
+    #[serde(rename = "Least Concern")]
+    #[serde(alias = "least concern")]
+    LeastConcern,
+    #[serde(rename = "Conservation Dependent")]
+    #[serde(alias = "conservation dependent")]
+    ConservationDependent,
+    #[serde(rename = "Near Threatened")]
+    #[serde(alias = "near threatened")]
+    NearThreatened,
+    #[serde(rename = "Vulnerable")]
+    #[serde(alias = "vulnerable")]
+    Vulnerable,
+    #[serde(rename = "Endangered")]
+    #[serde(alias = "endangered")]
+    Endangered,
+    #[serde(rename = "Critically Endangered")]
+    #[serde(alias = "critically endangered")]
+    CriticallyEndangered,
+    #[serde(rename = "Extinct in the Wild")]
+    #[serde(alias = "extinct in the wild")]
+    ExtinctInTheWild,
+    #[serde(rename = "Extinct")]
+    #[serde(alias = "extinct")]
+    Extinct,
+    #[serde(rename = "Not Evaluated")]
+    #[serde(alias = "not evaluated")]
+    NotEvaluated,
+    #[serde(rename = "Data Deficient")]
+    #[serde(alias = "data deficient")]
+    DataDeficient,
 }
