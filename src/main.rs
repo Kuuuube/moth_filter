@@ -146,11 +146,12 @@ fn main() {
 
         moth_ids.insert(taxon_tsv_data_raw.dwc_taxon_id.clone());
 
-        let common_name = tsv_maps.vernacular_name.get(&VernacularHashKey {
+        let common_name = tsv_maps.col_tsvs.vernacular_name.get(&VernacularHashKey {
             language_code: "eng".to_string(),
             taxon_id: taxon_tsv_data_raw.dwc_taxon_id.clone(),
         });
         let species_profile = tsv_maps
+            .col_tsvs
             .species_profile
             .get(&taxon_tsv_data_raw.dwc_taxon_id)
             .and_then(|x| {
@@ -162,6 +163,7 @@ fn main() {
             });
 
         let distribution = tsv_maps
+            .col_tsvs
             .distribution
             .get(&taxon_tsv_data_raw.dwc_taxon_id)
             .and_then(|x| {
