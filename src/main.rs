@@ -44,8 +44,8 @@ fn main() {
         };
 
         // filter out not species before checking for synonyms
-        if taxon_tsv_data_raw.dwc_taxon_rank != "species" {
-            if taxon_tsv_data_raw.dwc_taxon_rank == "subspecies" {
+        if let Some(taxon_rank) = taxon_tsv_data_raw.dwc_taxon_rank && taxon_rank != TaxonRank::Species {
+            if taxon_rank == TaxonRank::SubSpecies {
                 let Some(genus) = taxon_tsv_data_raw
                     .dwc_genus
                     .as_ref()

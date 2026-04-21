@@ -20,7 +20,7 @@ pub struct COLTaxonTSVRaw {
     #[serde(rename = "dwc:taxonomicStatus")]
     pub dwc_taxonomic_status: COLTaxonomicStatusRaw,
     #[serde(rename = "dwc:taxonRank")]
-    pub dwc_taxon_rank: String,
+    pub dwc_taxon_rank: Option<TaxonRank>,
     #[serde(rename = "dwc:scientificName")]
     pub dwc_scientific_name: String,
     #[serde(rename = "dwc:scientificNameAuthorship")]
@@ -152,20 +152,20 @@ pub struct IUCNTaxonTXTRaw {
     pub id: String,
     #[serde(rename = "scientificName")]
     pub scientific_name: String,
-    pub kingdom: String,
-    pub phylum: String,
-    pub class: String,
-    pub order: String,
-    pub family: String,
-    pub genus: String,
+    pub kingdom: Option<String>,
+    pub phylum: Option<String>,
+    pub class: Option<String>,
+    pub order: Option<String>,
+    pub family: Option<String>,
+    pub genus: Option<String>,
     #[serde(rename = "specificEpithet")]
-    pub specific_epithet: String,
+    pub specific_epithet: Option<String>,
     #[serde(rename = "scientificNameAuthorship")]
     pub scientific_name_authorship: String,
     #[serde(rename = "taxonRank")]
-    pub taxon_rank: String,
+    pub taxon_rank: Option<TaxonRank>,
     #[serde(rename = "infraspecificEpithet")]
-    pub infraspecific_epithet: String,
+    pub infraspecific_epithet: Option<String>,
     #[serde(rename = "taxonomicStatus")]
     pub taxonomic_status: String,
     #[serde(rename = "acceptedNameUsageID")]
@@ -251,4 +251,128 @@ impl IUCNThreatStatusRaw {
             IUCNThreatStatusRaw::DataDeficient => None,
         }
     }
+}
+
+#[derive(Debug, Deserialize, PartialEq)]
+pub enum TaxonRank {
+    #[serde(rename = "domain")]
+    Domain,
+    #[serde(rename = "realm")]
+    Realm,
+    #[serde(rename = "kingdom")]
+    Kingdom,
+    #[serde(rename = "subkingdom")]
+    SubKingdom,
+    #[serde(rename = "infrakingdom")]
+    InfraKingdom,
+    #[serde(rename = "phylum")]
+    Phylum,
+    #[serde(rename = "subphylum")]
+    SubPhylum,
+    #[serde(rename = "infraphylum")]
+    InfraPhylum,
+    #[serde(rename = "parvphylum")]
+    ParvPhylum,
+    #[serde(rename = "gigaclass")]
+    GigaClass,
+    #[serde(rename = "megaclass")]
+    MegaClass,
+    #[serde(rename = "superclass")]
+    SuperClass,
+    #[serde(rename = "class")]
+    Class,
+    #[serde(rename = "superorder")]
+    SuperOrder,
+    #[serde(rename = "subclass")]
+    SubClass,
+    #[serde(rename = "infraclass")]
+    InfraClass,
+    #[serde(rename = "subterclass")]
+    SubterClass,
+    #[serde(rename = "order")]
+    Order,
+    #[serde(rename = "suborder")]
+    SubOrder,
+    #[serde(rename = "infraorder")]
+    InfraOrder,
+    #[serde(rename = "parvorder")]
+    ParvOrder,
+    #[serde(rename = "nanorder")]
+    NanOrder,
+    #[serde(rename = "superfamily")]
+    SuperFamily,
+    #[serde(rename = "family")]
+    Family,
+    #[serde(rename = "epifamily")]
+    EpiFamily,
+    #[serde(rename = "subfamily")]
+    SubFamily,
+    #[serde(rename = "infrafamily")]
+    InfraFamily,
+    #[serde(rename = "supertribe")]
+    SuperTribe,
+    #[serde(rename = "tribe")]
+    Tribe,
+    #[serde(rename = "subtribe")]
+    SubTribe,
+    #[serde(rename = "infratribe")]
+    InfraTribe,
+    #[serde(rename = "genus")]
+    #[serde(alias = "infrageneric name")]
+    Genus,
+    #[serde(rename = "infragenus")]
+    InfraGenus,
+    #[serde(rename = "subgenus")]
+    SubGenus,
+    #[serde(rename = "section")]
+    #[serde(alias = "section botany")]
+    #[serde(alias = "section zoology")]
+    Section,
+    #[serde(rename = "subsection")]
+    #[serde(alias = "subsection botany")]
+    #[serde(alias = "subsection zoology")]
+    SubSection,
+    #[serde(rename = "series")]
+    Series,
+    #[serde(rename = "subseries")]
+    SubSeries,
+    #[serde(rename = "species aggregate")]
+    SuperSpecies,
+    #[serde(rename = "species")]
+    Species,
+    #[serde(rename = "subspecies")]
+    #[serde(alias = "subspecies (plantae)")]
+    SubSpecies,
+    #[serde(rename = "infraspecific name")]
+    InfraSpecificName,
+    #[serde(rename = "infrasubspecific name")]
+    InfraSubSpecificEpithet,
+    #[serde(rename = "natio")]
+    Natio, // i have no clue what this is but it's below subspecies (https://www.marinespecies.org/copepoda/aphia.php?p=taxdetails&id=363902)
+    #[serde(rename = "forma specialis")]
+    FormaSpecialis, // not necessarily above or below subspecies
+    #[serde(rename = "variety")]
+    Variety,
+    #[serde(rename = "subvariety")]
+    SubVariety,
+    #[serde(rename = "form")]
+    Form,
+    #[serde(rename = "morph")]
+    Morph,
+    #[serde(rename = "subform")]
+    SubForm,
+    #[serde(rename = "aberration")]
+    Aberration,
+    #[serde(rename = "race")]
+    #[serde(alias = "proles")]
+    Race,
+    #[serde(rename = "mutation")]
+    #[serde(alias = "mutatio")]
+    Mutation,
+    #[serde(rename = "unrankedsynonym")]
+    #[serde(alias = "lusus")]
+    UnrankedSynonym,
+    #[serde(rename = "unranked")]
+    #[serde(alias = "other")]
+    Unranked,
 }
