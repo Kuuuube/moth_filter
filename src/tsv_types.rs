@@ -2,7 +2,7 @@ use serde::Deserialize;
 
 #[derive(Debug, Deserialize)]
 #[allow(unused)]
-pub struct TaxonTSVRaw {
+pub struct COLTaxonTSVRaw {
     #[serde(rename = "dwc:taxonID")]
     pub dwc_taxon_id: String,
     #[serde(rename = "dwc:parentNameUsageID")]
@@ -16,7 +16,7 @@ pub struct TaxonTSVRaw {
     #[serde(rename = "dwc:datasetID")]
     pub dwc_dataset_id: String,
     #[serde(rename = "dwc:taxonomicStatus")]
-    pub dwc_taxonomic_status: TaxonomicStatusRaw,
+    pub dwc_taxonomic_status: COLTaxonomicStatusRaw,
     #[serde(rename = "dwc:taxonRank")]
     pub dwc_taxon_rank: String,
     #[serde(rename = "dwc:scientificName")]
@@ -74,7 +74,7 @@ pub struct TaxonTSVRaw {
 }
 
 #[derive(Debug, Deserialize)]
-pub enum TaxonomicStatusRaw {
+pub enum COLTaxonomicStatusRaw {
     #[serde(rename = "accepted")]
     Accepted,
     #[serde(rename = "provisionally accepted")]
@@ -89,7 +89,7 @@ pub enum TaxonomicStatusRaw {
 
 #[derive(Debug, Deserialize)]
 #[allow(unused)]
-pub struct VernacularNameTSVRaw {
+pub struct COLVernacularNameTSVRaw {
     #[serde(rename = "dwc:taxonID")]
     pub dwc_taxon_id: String,
     #[serde(rename = "dcterms:language")]
@@ -102,7 +102,7 @@ pub struct VernacularNameTSVRaw {
 
 #[derive(Debug, Deserialize)]
 #[allow(unused)]
-pub struct SpeciesProfileTSVRaw {
+pub struct COLSpeciesProfileTSVRaw {
     #[serde(rename = "dwc:taxonID")]
     pub dwc_taxon_id: String,
     #[serde(rename = "gbif:isExtinct")]
@@ -117,7 +117,7 @@ pub struct SpeciesProfileTSVRaw {
 
 #[derive(Debug, Deserialize)]
 #[allow(unused)]
-pub struct DistributionTSVRaw {
+pub struct COLDistributionTSVRaw {
     #[serde(rename = "dwc:taxonID")]
     pub dwc_taxon_id: String,
     #[serde(rename = "dwc:establishmentMeans")]
@@ -125,7 +125,7 @@ pub struct DistributionTSVRaw {
     #[serde(rename = "dwc:degreeOfEstablishment")]
     pub dwc_degree_of_establishment: String,
     #[serde(rename = "iucn:threatStatus")]
-    pub iucn_threat_status: Option<ThreatStatusRaw>,
+    pub iucn_threat_status: Option<COLThreatStatusRaw>,
     #[serde(rename = "dwc:pathway")]
     pub dwc_pathway: String,
     #[serde(rename = "dwc:lifeStage")]
@@ -145,7 +145,7 @@ pub struct DistributionTSVRaw {
 }
 
 #[derive(Debug, Deserialize)]
-pub enum ThreatStatusRaw {
+pub enum COLThreatStatusRaw {
     #[serde(rename = "least concern")]
     LeastConcern,
     #[serde(rename = "vulnerable")]

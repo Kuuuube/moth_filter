@@ -13,8 +13,8 @@ pub fn parse_tsvs() -> TSVMaps {
         .from_reader(
             File::open(format!("{CATALOGUE_OF_LIFE_DATA_DIR}/VernacularName.tsv")).unwrap(),
         );
-    let col_vernacular_tsv = addin_tsv_hashmaps::vernacular_to_hashmap(
-        col_vernacular_tsv_reader.deserialize::<VernacularNameTSVRaw>(),
+    let col_vernacular_tsv = addin_tsv_hashmaps::col_vernacular_to_hashmap(
+        col_vernacular_tsv_reader.deserialize::<COLVernacularNameTSVRaw>(),
     );
 
     let mut col_species_profile_tsv_reader = csv::ReaderBuilder::new()
@@ -23,16 +23,16 @@ pub fn parse_tsvs() -> TSVMaps {
         .from_reader(
             File::open(format!("{CATALOGUE_OF_LIFE_DATA_DIR}/SpeciesProfile.tsv")).unwrap(),
         );
-    let col_species_profile_tsv = addin_tsv_hashmaps::species_profile_to_hashmap(
-        col_species_profile_tsv_reader.deserialize::<SpeciesProfileTSVRaw>(),
+    let col_species_profile_tsv = addin_tsv_hashmaps::col_species_profile_to_hashmap(
+        col_species_profile_tsv_reader.deserialize::<COLSpeciesProfileTSVRaw>(),
     );
 
     let mut col_distribution_tsv_reader = csv::ReaderBuilder::new()
         .delimiter(b'\t')
         .quoting(false)
         .from_reader(File::open(format!("{CATALOGUE_OF_LIFE_DATA_DIR}/Distribution.tsv")).unwrap());
-    let col_distribution_tsv = addin_tsv_hashmaps::distribution_to_hashmap(
-        col_distribution_tsv_reader.deserialize::<DistributionTSVRaw>(),
+    let col_distribution_tsv = addin_tsv_hashmaps::col_distribution_to_hashmap(
+        col_distribution_tsv_reader.deserialize::<COLDistributionTSVRaw>(),
     );
 
     return TSVMaps {

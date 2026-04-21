@@ -9,8 +9,8 @@ pub struct VernacularHashKey {
 }
 pub type VernacularCommonName = Vec<String>;
 
-pub fn vernacular_to_hashmap(
-    tsv_iter: csv::DeserializeRecordsIter<'_, File, VernacularNameTSVRaw>,
+pub fn col_vernacular_to_hashmap(
+    tsv_iter: csv::DeserializeRecordsIter<'_, File, COLVernacularNameTSVRaw>,
 ) -> HashMap<VernacularHashKey, VernacularCommonName> {
     let mut hashmap: HashMap<VernacularHashKey, VernacularCommonName> = HashMap::new();
     for tsv_reader_result in tsv_iter {
@@ -29,10 +29,10 @@ pub fn vernacular_to_hashmap(
     return hashmap;
 }
 
-pub fn species_profile_to_hashmap(
-    tsv_iter: csv::DeserializeRecordsIter<'_, File, SpeciesProfileTSVRaw>,
-) -> HashMap<std::string::String, SpeciesProfileTSVRaw> {
-    let mut hashmap: HashMap<String, SpeciesProfileTSVRaw> = HashMap::new();
+pub fn col_species_profile_to_hashmap(
+    tsv_iter: csv::DeserializeRecordsIter<'_, File, COLSpeciesProfileTSVRaw>,
+) -> HashMap<std::string::String, COLSpeciesProfileTSVRaw> {
+    let mut hashmap: HashMap<String, COLSpeciesProfileTSVRaw> = HashMap::new();
     for tsv_reader_result in tsv_iter {
         let Ok(ok) = tsv_reader_result else {
             continue;
@@ -42,10 +42,10 @@ pub fn species_profile_to_hashmap(
     return hashmap;
 }
 
-pub fn distribution_to_hashmap(
-    tsv_iter: csv::DeserializeRecordsIter<'_, File, DistributionTSVRaw>,
-) -> HashMap<std::string::String, DistributionTSVRaw> {
-    let mut hashmap: HashMap<String, DistributionTSVRaw> = HashMap::new();
+pub fn col_distribution_to_hashmap(
+    tsv_iter: csv::DeserializeRecordsIter<'_, File, COLDistributionTSVRaw>,
+) -> HashMap<std::string::String, COLDistributionTSVRaw> {
+    let mut hashmap: HashMap<String, COLDistributionTSVRaw> = HashMap::new();
     for tsv_reader_result in tsv_iter {
         let Ok(ok) = tsv_reader_result else {
             continue;

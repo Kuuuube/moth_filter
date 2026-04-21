@@ -25,7 +25,7 @@ fn main() {
         .delimiter(b'\t')
         .quoting(false)
         .from_reader(File::open(format!("{CATALOGUE_OF_LIFE_DATA_DIR}/Taxon.tsv")).unwrap());
-    let taxon_tsv = taxon_tsv_reader.deserialize::<TaxonTSVRaw>();
+    let taxon_tsv = taxon_tsv_reader.deserialize::<COLTaxonTSVRaw>();
 
     let tsv_maps = tsv_parsing::parse_tsvs();
 
@@ -79,7 +79,7 @@ fn main() {
 
         // synonyms have nearly no data and will never be detected as a moth, run before moth check and filter out non moths later
         match taxon_tsv_data_raw.dwc_taxonomic_status {
-            TaxonomicStatusRaw::Synonym | TaxonomicStatusRaw::AmbiguousSynonym => {
+            COLTaxonomicStatusRaw::Synonym | COLTaxonomicStatusRaw::AmbiguousSynonym => {
                 let primary_taxon_id = taxon_tsv_data_raw.dwc_accepted_name_usage_id;
                 if let Some(genus) = taxon_tsv_data_raw.dwc_generic_name
                     && let Some(specific) = taxon_tsv_data_raw.dwc_specific_epithet
@@ -99,7 +99,7 @@ fn main() {
                 }
                 continue;
             }
-            TaxonomicStatusRaw::Misapplied => {
+            COLTaxonomicStatusRaw::Misapplied => {
                 continue;
             }
             _ => (),
@@ -168,16 +168,16 @@ fn main() {
             .get(&taxon_tsv_data_raw.dwc_taxon_id)
             .and_then(|x| {
                 let threat_status = x.iucn_threat_status.as_ref().and_then(|x| match x {
-                    ThreatStatusRaw::LeastConcern => Some(ThreatStatus::LeastConcern),
-                    ThreatStatusRaw::Vulnerable => Some(ThreatStatus::Vulnerable),
-                    ThreatStatusRaw::Endangered => Some(ThreatStatus::Endangered),
-                    ThreatStatusRaw::CriticallyEndangered => {
+                    COLThreatStatusRaw::LeastConcern => Some(ThreatStatus::LeastConcern),
+                    COLThreatStatusRaw::Vulnerable => Some(ThreatStatus::Vulnerable),
+                    COLThreatStatusRaw::Endangered => Some(ThreatStatus::Endangered),
+                    COLThreatStatusRaw::CriticallyEndangered => {
                         Some(ThreatStatus::CriticallyEndangered)
                     }
-                    ThreatStatusRaw::ExtinctInTheWild => Some(ThreatStatus::ExtinctInTheWild),
-                    ThreatStatusRaw::Extinct => Some(ThreatStatus::Extinct),
-                    ThreatStatusRaw::NotEvaluated => None,
-                    ThreatStatusRaw::DataDeficient => None,
+                    COLThreatStatusRaw::ExtinctInTheWild => Some(ThreatStatus::ExtinctInTheWild),
+                    COLThreatStatusRaw::Extinct => Some(ThreatStatus::Extinct),
+                    COLThreatStatusRaw::NotEvaluated => None,
+                    COLThreatStatusRaw::DataDeficient => None,
                 });
                 if x.dwc_locality.is_none() && threat_status.is_none() {
                     return None;
