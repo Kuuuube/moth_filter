@@ -73,20 +73,17 @@ pub fn parse_tsvs() -> TSVMaps {
     let iucn_taxon_tsv = addin_tsv_hashmaps::iucn_taxon_to_hashmap(
         iucn_taxon_tsv_reader.deserialize::<IUCNTaxonTXTRaw>(),
     );
-    let iucn_taxon_tsv_id_key = addin_tsv_hashmaps::iucn_taxon_to_hashmap_id_key(
-        iucn_taxon_tsv_reader.deserialize::<IUCNTaxonTXTRaw>(),
-    );
 
-    let mut iucn_vernacular_tsv_reader = csv::ReaderBuilder::new()
-        .delimiter(b'\t')
-        .quoting(false)
-        .has_headers(false)
-        .from_reader(File::open(format!("{IUCN_DATA_DIR}/vernacularname.txt")).unwrap());
-    iucn_vernacular_tsv_reader
-        .set_headers(csv::StringRecord::from(Vec::from(IUCN_TAXON_TXT_HEADERS)));
-    let iucn_vernacular_tsv = addin_tsv_hashmaps::iucn_vernacular_to_hashmap(
-        iucn_vernacular_tsv_reader.deserialize::<IUCNVernacularTXTRaw>(),
-    );
+    // let mut iucn_vernacular_tsv_reader = csv::ReaderBuilder::new()
+    //     .delimiter(b'\t')
+    //     .quoting(false)
+    //     .has_headers(false)
+    //     .from_reader(File::open(format!("{IUCN_DATA_DIR}/vernacularname.txt")).unwrap());
+    // iucn_vernacular_tsv_reader
+    //     .set_headers(csv::StringRecord::from(Vec::from(IUCN_TAXON_TXT_HEADERS)));
+    // let iucn_vernacular_tsv = addin_tsv_hashmaps::iucn_vernacular_to_hashmap(
+    //     iucn_vernacular_tsv_reader.deserialize::<IUCNVernacularTXTRaw>(),
+    // );
 
     let mut iucn_distribution_tsv_reader = csv::ReaderBuilder::new()
         .delimiter(b'\t')
@@ -107,8 +104,7 @@ pub fn parse_tsvs() -> TSVMaps {
         },
         iucn_tsvs: IUCNRedlistTSVMaps {
             taxon: iucn_taxon_tsv,
-            taxon_id_key: iucn_taxon_tsv_id_key,
-            vernacular: iucn_vernacular_tsv,
+            // vernacular: iucn_vernacular_tsv,
             distribution: iucn_distribution_tsv,
         },
     };
@@ -127,7 +123,6 @@ pub struct CatalogueOfLifeTSVMaps {
 
 pub struct IUCNRedlistTSVMaps {
     pub taxon: HashMap<String, IUCNTaxonTXTRaw>,
-    pub taxon_id_key: HashMap<String, String>,
-    pub vernacular: HashMap<String, IUCNVernacularTXTRaw>,
+    // pub vernacular: HashMap<String, IUCNVernacularTXTRaw>,
     pub distribution: HashMap<String, IUCNDistributionTXTRaw>,
 }

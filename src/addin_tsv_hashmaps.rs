@@ -114,23 +114,23 @@ pub fn iucn_taxon_to_hashmap(
     return hashmap;
 }
 
-pub fn iucn_vernacular_to_hashmap(
-    tsv_iter: csv::DeserializeRecordsIter<'_, File, IUCNVernacularTXTRaw>,
-) -> HashMap<String, IUCNVernacularTXTRaw> {
-    let mut hashmap: HashMap<String, IUCNVernacularTXTRaw> = HashMap::new();
-    let mut errors = 0;
-    for tsv_reader_result in tsv_iter {
-        let Ok(ok) = tsv_reader_result else {
-            errors += 1;
-            continue;
-        };
-        hashmap.insert(ok.id.clone(), ok);
-    }
-    if errors > 0 {
-        println!("iucn_vernacular_to_hashmap bad rows: {errors}");
-    }
-    return hashmap;
-}
+// pub fn iucn_vernacular_to_hashmap(
+//     tsv_iter: csv::DeserializeRecordsIter<'_, File, IUCNVernacularTXTRaw>,
+// ) -> HashMap<String, IUCNVernacularTXTRaw> {
+//     let mut hashmap: HashMap<String, IUCNVernacularTXTRaw> = HashMap::new();
+//     let mut errors = 0;
+//     for tsv_reader_result in tsv_iter {
+//         let Ok(ok) = tsv_reader_result else {
+//             errors += 1;
+//             continue;
+//         };
+//         hashmap.insert(ok.id.clone(), ok);
+//     }
+//     if errors > 0 {
+//         println!("iucn_vernacular_to_hashmap bad rows: {errors}");
+//     }
+//     return hashmap;
+// }
 
 pub fn iucn_distribution_to_hashmap(
     tsv_iter: csv::DeserializeRecordsIter<'_, File, IUCNDistributionTXTRaw>,
