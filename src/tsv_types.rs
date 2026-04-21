@@ -147,6 +147,7 @@ pub struct COLDistributionTSVRaw {
 }
 
 #[derive(Debug, Deserialize)]
+#[allow(unused)]
 pub struct IUCNTaxonTXTRaw {
     pub id: String,
     #[serde(rename = "scientificName")]
@@ -175,6 +176,7 @@ pub struct IUCNTaxonTXTRaw {
 }
 
 #[derive(Debug, Deserialize)]
+#[allow(unused)]
 pub struct IUCNVernacularTXTRaw {
     pub id: String,
     #[serde(rename = "isPreferredName")]
@@ -185,6 +187,7 @@ pub struct IUCNVernacularTXTRaw {
 }
 
 #[derive(Debug, Deserialize)]
+#[allow(unused)]
 pub struct IUCNDistributionTXTRaw {
     pub id: String,
     #[serde(rename = "establishmentMeans")]
