@@ -13,8 +13,10 @@ pub fn col_vernacular_to_hashmap(
     tsv_iter: csv::DeserializeRecordsIter<'_, File, COLVernacularNameTSVRaw>,
 ) -> HashMap<VernacularHashKey, VernacularCommonName> {
     let mut hashmap: HashMap<VernacularHashKey, VernacularCommonName> = HashMap::new();
+    let mut errors = 0;
     for tsv_reader_result in tsv_iter {
         let Ok(ok) = tsv_reader_result else {
+            errors += 1;
             continue;
         };
         let key = VernacularHashKey {
@@ -26,6 +28,9 @@ pub fn col_vernacular_to_hashmap(
             .and_modify(|x| x.push(ok.dwc_vernacular_name.clone()))
             .or_insert(vec![ok.dwc_vernacular_name]);
     }
+    if errors > 0 {
+        println!("col_vernacular_to_hashmap bad rows: {errors}");
+    }
     return hashmap;
 }
 
@@ -33,11 +38,16 @@ pub fn col_species_profile_to_hashmap(
     tsv_iter: csv::DeserializeRecordsIter<'_, File, COLSpeciesProfileTSVRaw>,
 ) -> HashMap<String, COLSpeciesProfileTSVRaw> {
     let mut hashmap: HashMap<String, COLSpeciesProfileTSVRaw> = HashMap::new();
+    let mut errors = 0;
     for tsv_reader_result in tsv_iter {
         let Ok(ok) = tsv_reader_result else {
+            errors += 1;
             continue;
         };
         hashmap.insert(ok.dwc_taxon_id.clone(), ok);
+    }
+    if errors > 0 {
+        println!("col_species_profile_to_hashmap bad rows: {errors}");
     }
     return hashmap;
 }
@@ -46,11 +56,16 @@ pub fn col_distribution_to_hashmap(
     tsv_iter: csv::DeserializeRecordsIter<'_, File, COLDistributionTSVRaw>,
 ) -> HashMap<String, COLDistributionTSVRaw> {
     let mut hashmap: HashMap<String, COLDistributionTSVRaw> = HashMap::new();
+    let mut errors = 0;
     for tsv_reader_result in tsv_iter {
         let Ok(ok) = tsv_reader_result else {
+            errors += 1;
             continue;
         };
         hashmap.insert(ok.dwc_taxon_id.clone(), ok);
+    }
+    if errors > 0 {
+        println!("col_distribution_to_hashmap bad rows: {errors}");
     }
     return hashmap;
 }
@@ -59,8 +74,10 @@ pub fn iucn_taxon_to_hashmap_id_key(
     tsv_iter: csv::DeserializeRecordsIter<'_, File, IUCNTaxonTXTRaw>,
 ) -> HashMap<String, String> {
     let mut hashmap: HashMap<String, String> = HashMap::new();
+    let mut errors = 0;
     for tsv_reader_result in tsv_iter {
         let Ok(ok) = tsv_reader_result else {
+            errors += 1;
             continue;
         };
         let Some(base_scientific_name) = iucn_scientific_name_to_base(&ok.scientific_name) else {
@@ -69,6 +86,9 @@ pub fn iucn_taxon_to_hashmap_id_key(
         };
         hashmap.insert(ok.id.clone(), base_scientific_name);
     }
+    if errors > 0 {
+        println!("iucn_taxon_to_hashmap_id_key bad rows: {errors}");
+    }
     return hashmap;
 }
 
@@ -76,8 +96,10 @@ pub fn iucn_taxon_to_hashmap(
     tsv_iter: csv::DeserializeRecordsIter<'_, File, IUCNTaxonTXTRaw>,
 ) -> HashMap<String, IUCNTaxonTXTRaw> {
     let mut hashmap: HashMap<String, IUCNTaxonTXTRaw> = HashMap::new();
+    let mut errors = 0;
     for tsv_reader_result in tsv_iter {
         let Ok(ok) = tsv_reader_result else {
+            errors += 1;
             continue;
         };
         let Some(base_scientific_name) = iucn_scientific_name_to_base(&ok.scientific_name) else {
@@ -85,6 +107,45 @@ pub fn iucn_taxon_to_hashmap(
             continue;
         };
         hashmap.insert(base_scientific_name, ok);
+    }
+    if errors > 0 {
+        println!("iucn_taxon_to_hashmap bad rows: {errors}");
+    }
+    return hashmap;
+}
+
+pub fn iucn_vernacular_to_hashmap(
+    tsv_iter: csv::DeserializeRecordsIter<'_, File, IUCNVernacularTXTRaw>,
+) -> HashMap<String, IUCNVernacularTXTRaw> {
+    let mut hashmap: HashMap<String, IUCNVernacularTXTRaw> = HashMap::new();
+    let mut errors = 0;
+    for tsv_reader_result in tsv_iter {
+        let Ok(ok) = tsv_reader_result else {
+            errors += 1;
+            continue;
+        };
+        hashmap.insert(ok.id.clone(), ok);
+    }
+    if errors > 0 {
+        println!("iucn_vernacular_to_hashmap bad rows: {errors}");
+    }
+    return hashmap;
+}
+
+pub fn iucn_distribution_to_hashmap(
+    tsv_iter: csv::DeserializeRecordsIter<'_, File, IUCNDistributionTXTRaw>,
+) -> HashMap<String, IUCNDistributionTXTRaw> {
+    let mut hashmap: HashMap<String, IUCNDistributionTXTRaw> = HashMap::new();
+    let mut errors = 0;
+    for tsv_reader_result in tsv_iter {
+        let Ok(ok) = tsv_reader_result else {
+            errors += 1;
+            continue;
+        };
+        hashmap.insert(ok.id.clone(), ok);
+    }
+    if errors > 0 {
+        println!("iucn_distribution_to_hashmap bad rows: {errors}");
     }
     return hashmap;
 }
@@ -102,30 +163,4 @@ fn iucn_scientific_name_to_base(scientific_name: &str) -> Option<String> {
         return None;
     };
     return Some(format!("{} {}", genus, specific_epithet));
-}
-
-pub fn iucn_vernacular_to_hashmap(
-    tsv_iter: csv::DeserializeRecordsIter<'_, File, IUCNVernacularTXTRaw>,
-) -> HashMap<String, IUCNVernacularTXTRaw> {
-    let mut hashmap: HashMap<String, IUCNVernacularTXTRaw> = HashMap::new();
-    for tsv_reader_result in tsv_iter {
-        let Ok(ok) = tsv_reader_result else {
-            continue;
-        };
-        // hashmap.insert(ok.dwc_taxon_id.clone(), ok);
-    }
-    return hashmap;
-}
-
-pub fn iucn_distribution_to_hashmap(
-    tsv_iter: csv::DeserializeRecordsIter<'_, File, IUCNDistributionTXTRaw>,
-) -> HashMap<String, IUCNDistributionTXTRaw> {
-    let mut hashmap: HashMap<String, IUCNDistributionTXTRaw> = HashMap::new();
-    for tsv_reader_result in tsv_iter {
-        let Ok(ok) = tsv_reader_result else {
-            continue;
-        };
-        // hashmap.insert(ok.dwc_taxon_id.clone(), ok);
-    }
-    return hashmap;
 }
