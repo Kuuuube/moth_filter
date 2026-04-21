@@ -31,7 +31,7 @@ pub fn col_vernacular_to_hashmap(
 
 pub fn col_species_profile_to_hashmap(
     tsv_iter: csv::DeserializeRecordsIter<'_, File, COLSpeciesProfileTSVRaw>,
-) -> HashMap<std::string::String, COLSpeciesProfileTSVRaw> {
+) -> HashMap<String, COLSpeciesProfileTSVRaw> {
     let mut hashmap: HashMap<String, COLSpeciesProfileTSVRaw> = HashMap::new();
     for tsv_reader_result in tsv_iter {
         let Ok(ok) = tsv_reader_result else {
@@ -44,7 +44,7 @@ pub fn col_species_profile_to_hashmap(
 
 pub fn col_distribution_to_hashmap(
     tsv_iter: csv::DeserializeRecordsIter<'_, File, COLDistributionTSVRaw>,
-) -> HashMap<std::string::String, COLDistributionTSVRaw> {
+) -> HashMap<String, COLDistributionTSVRaw> {
     let mut hashmap: HashMap<String, COLDistributionTSVRaw> = HashMap::new();
     for tsv_reader_result in tsv_iter {
         let Ok(ok) = tsv_reader_result else {
