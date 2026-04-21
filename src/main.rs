@@ -17,6 +17,7 @@ const MOTH_ORDER: &str = "Lepidoptera";
 const BUTTERFLY_SUPERFAMILY: &str = "Papilionoidea";
 
 const CATALOGUE_OF_LIFE_DATA_DIR: &str = "./data/col";
+const IUCN_DATA_DIR: &str = "./data/iucn";
 
 fn main() {
     let start_time = Instant::now();

@@ -163,3 +163,56 @@ pub enum COLThreatStatusRaw {
     #[serde(rename = "data deficient")]
     DataDeficient,
 }
+
+#[derive(Debug, Deserialize)]
+pub struct IUCNTaxonTXTRaw {
+    pub id: String,
+    #[serde(rename = "scientificName")]
+    pub scientific_name: String,
+    pub kingdom: String,
+    pub phylum: String,
+    pub class: String,
+    pub order: String,
+    pub family: String,
+    pub genus: String,
+    #[serde(rename = "specificEpithet")]
+    pub specific_epithet: String,
+    #[serde(rename = "scientificNameAuthorship")]
+    pub scientific_name_authorship: String,
+    #[serde(rename = "taxonRank")]
+    pub taxon_rank: String,
+    #[serde(rename = "infraspecificEpithet")]
+    pub infraspecific_epithet: String,
+    #[serde(rename = "taxonomicStatus")]
+    pub taxonomic_status: String,
+    #[serde(rename = "acceptedNameUsageID")]
+    pub accepted_name_usage_id: String,
+    #[serde(rename = "bibliographicCitation")]
+    pub bibliographic_citation: String,
+    pub references: String,
+}
+
+#[derive(Debug, Deserialize)]
+pub struct IUCNVernacularTXTRaw {
+    pub id: String,
+    #[serde(rename = "isPreferredName")]
+    pub is_preferred_name: String,
+    #[serde(rename = "vernacularName")]
+    pub vernacular_name: String,
+    pub language: String,
+}
+
+#[derive(Debug, Deserialize)]
+pub struct IUCNDistributionTXTRaw {
+    pub id: String,
+    #[serde(rename = "establishmentMeans")]
+    pub establishment_means: String,
+    pub source: String,
+    #[serde(rename = "countryCode")]
+    pub country_code: String,
+    pub locality: String,
+    #[serde(rename = "threatStatus")]
+    pub threat_status: String,
+    #[serde(rename = "occurrenceStatus")]
+    pub occurrence_status: String,
+}
