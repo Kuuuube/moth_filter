@@ -12,11 +12,19 @@ Papilionoidea contains all the butterflies. Moths are everything besides butterf
 
 ## Data Downloads
 
+### Catalogue of Life
+
 https://www.catalogueoflife.org/data/download or https://download.checklistbank.org/col/monthly/
 
 The `Darwin Core Archive` or `dwca` is used here (base or extended `xr` is up to you). Extract and move the contents to `./data/col`. You should have a bunch of `tsv` files directly in the data directory.
 
 Downloads for specific taxonomic groups can be created with an account.
+
+### The IUCN Redlist
+
+https://www.checklistbank.org/dataset/53131/download or https://hosted-datasets.gbif.org/datasets/iucn/ (last verified with 2025-11-12 or iucn-2025-2)
+
+Extract and move the contents to `./data/iucn`. You should have a few `txt` and `xml` files directly in the data directory.
 
 ## Generating Output
 
