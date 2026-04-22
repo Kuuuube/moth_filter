@@ -105,14 +105,19 @@ pub fn iucn_hashmaps_combiner(
         if let Some(taxon_rank) = taxon_entry.taxon_rank
             && (taxon_rank == TaxonRank::Species || taxon_rank == TaxonRank::SubSpecies)
         {
-            let Some(genus) = taxon_entry.genus else {
-                errors += 1;
-                continue;
-            };
-            let Some(specific) = taxon_entry.specific_epithet else {
-                errors += 1;
-                continue;
-            };
+            let genus = taxon_entry
+                .genus
+                .expect("IUCN species or subspecies found with no genus");
+
+            let specific = taxon_entry
+                .specific_epithet
+                .expect("IUCN species or subspecies found with no specific name");
+
+            let subspecific = (taxon_rank == TaxonRank::SubSpecies).then(|| {
+                taxon_entry
+                    .infraspecific_epithet
+                    .expect("IUCN subspecies found with no infraspecific name")
+            });
 
             let distribution_data = distribution
                 .get(&taxon_entry.id)
@@ -128,7 +133,7 @@ pub fn iucn_hashmaps_combiner(
                 IUCNDataKey {
                     genus: genus.to_lowercase(),
                     specific: specific.to_lowercase(),
-                    subspecific: taxon_entry.infraspecific_epithet.map(|x| x.to_lowercase()),
+                    subspecific: subspecific.map(|x| x.to_lowercase()),
                 },
                 iucn_data,
             );
