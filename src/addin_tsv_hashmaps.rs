@@ -70,68 +70,6 @@ pub fn col_distribution_to_hashmap(
     return hashmap;
 }
 
-pub fn iucn_taxon_to_hashmap_id_key(
-    tsv_iter: csv::DeserializeRecordsIter<'_, File, IUCNTaxonTXTRaw>,
-) -> HashMap<String, String> {
-    let mut hashmap: HashMap<String, String> = HashMap::new();
-    let mut errors = 0;
-    for tsv_reader_result in tsv_iter {
-        let Ok(ok) = tsv_reader_result else {
-            errors += 1;
-            continue;
-        };
-        let Some(base_scientific_name) = iucn_scientific_name_to_base(&ok.scientific_name) else {
-            println!("IUCN bad scientific name");
-            continue;
-        };
-        hashmap.insert(ok.id.clone(), base_scientific_name);
-    }
-    if errors > 0 {
-        println!("iucn_taxon_to_hashmap_id_key bad rows: {errors}");
-    }
-    return hashmap;
-}
-
-pub fn iucn_taxon_to_hashmap(
-    tsv_iter: csv::DeserializeRecordsIter<'_, File, IUCNTaxonTXTRaw>,
-) -> HashMap<String, IUCNTaxonTXTRaw> {
-    let mut hashmap: HashMap<String, IUCNTaxonTXTRaw> = HashMap::new();
-    let mut errors = 0;
-    for tsv_reader_result in tsv_iter {
-        let Ok(ok) = tsv_reader_result else {
-            errors += 1;
-            continue;
-        };
-        let Some(base_scientific_name) = iucn_scientific_name_to_base(&ok.scientific_name) else {
-            println!("IUCN bad scientific name");
-            continue;
-        };
-        hashmap.insert(base_scientific_name, ok);
-    }
-    if errors > 0 {
-        println!("iucn_taxon_to_hashmap bad rows: {errors}");
-    }
-    return hashmap;
-}
-
-// pub fn iucn_vernacular_to_hashmap(
-//     tsv_iter: csv::DeserializeRecordsIter<'_, File, IUCNVernacularTXTRaw>,
-// ) -> HashMap<String, IUCNVernacularTXTRaw> {
-//     let mut hashmap: HashMap<String, IUCNVernacularTXTRaw> = HashMap::new();
-//     let mut errors = 0;
-//     for tsv_reader_result in tsv_iter {
-//         let Ok(ok) = tsv_reader_result else {
-//             errors += 1;
-//             continue;
-//         };
-//         hashmap.insert(ok.id.clone(), ok);
-//     }
-//     if errors > 0 {
-//         println!("iucn_vernacular_to_hashmap bad rows: {errors}");
-//     }
-//     return hashmap;
-// }
-
 pub fn iucn_distribution_to_hashmap(
     tsv_iter: csv::DeserializeRecordsIter<'_, File, IUCNDistributionTXTRaw>,
 ) -> HashMap<String, IUCNDistributionTXTRaw> {
@@ -150,17 +88,66 @@ pub fn iucn_distribution_to_hashmap(
     return hashmap;
 }
 
-fn iucn_scientific_name_to_base(scientific_name: &str) -> Option<String> {
-    let mut scientific_name_split = scientific_name.split_ascii_whitespace();
-    let genus = scientific_name_split.next();
-    let Some(genus) = genus else {
-        println!("Bad IUCN genus");
-        return None;
-    };
-    let specific_epithet = scientific_name_split.next();
-    let Some(specific_epithet) = specific_epithet else {
-        println!("Bad IUCN specific_epithet");
-        return None;
-    };
-    return Some(format!("{} {}", genus, specific_epithet));
+pub fn iucn_hashmaps_combiner(
+    taxon_tsv: csv::DeserializeRecordsIter<'_, File, IUCNTaxonTXTRaw>,
+    /* vernacular: HashMap<String, IUCNVernacularTXTRaw>, */
+    distribution: HashMap<String, IUCNDistributionTXTRaw>,
+) -> HashMap<IUCNDataKey, IUCNData> {
+    let mut hashmap: HashMap<IUCNDataKey, IUCNData> = HashMap::new();
+    let mut errors = 0;
+
+    for taxon_entry in taxon_tsv {
+        let Ok(taxon_entry) = taxon_entry else {
+            errors += 1;
+            continue;
+        };
+
+        if let Some(taxon_rank) = taxon_entry.taxon_rank
+            && (taxon_rank == TaxonRank::Species || taxon_rank == TaxonRank::SubSpecies)
+        {
+            let Some(genus) = taxon_entry.genus else {
+                errors += 1;
+                continue;
+            };
+            let Some(specific) = taxon_entry.specific_epithet else {
+                errors += 1;
+                continue;
+            };
+
+            let distribution_data = distribution
+                .get(&taxon_entry.id)
+                .expect("IUCN species or subspecies found with no distribution data");
+
+            let iucn_data = IUCNData {
+                references: taxon_entry.references,
+                threat_status: distribution_data.threat_status.clone(),
+            };
+
+            hashmap.insert(
+                IUCNDataKey {
+                    genus,
+                    specific,
+                    subspecific: taxon_entry.infraspecific_epithet,
+                },
+                iucn_data,
+            );
+        }
+    }
+    if errors > 0 {
+        println!("iucn_hashmaps_combiner bad rows: {errors}");
+    }
+    return hashmap;
+}
+
+#[derive(Debug)]
+pub struct IUCNData {
+    pub references: String,
+    pub threat_status: IUCNThreatStatusRaw,
+}
+
+#[derive(Eq, Hash, PartialEq, Debug)]
+pub struct IUCNDataKey {
+    pub genus: String,
+    pub specific: String,
+    pub subspecific: Option<String>,
 }

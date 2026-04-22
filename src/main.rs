@@ -6,7 +6,11 @@ use std::{
     time::Instant,
 };
 
-use crate::{addin_tsv_hashmaps::VernacularHashKey, json_types::*, tsv_types::*};
+use crate::{
+    addin_tsv_hashmaps::{IUCNDataKey, VernacularHashKey},
+    json_types::*,
+    tsv_types::*,
+};
 
 mod addin_tsv_hashmaps;
 mod json_types;
@@ -44,7 +48,9 @@ fn main() {
         };
 
         // filter out not species before checking for synonyms
-        if let Some(taxon_rank) = taxon_tsv_data_raw.dwc_taxon_rank && taxon_rank != TaxonRank::Species {
+        if let Some(taxon_rank) = taxon_tsv_data_raw.dwc_taxon_rank
+            && taxon_rank != TaxonRank::Species
+        {
             if taxon_rank == TaxonRank::SubSpecies {
                 let Some(genus) = taxon_tsv_data_raw
                     .dwc_genus
@@ -163,7 +169,7 @@ fn main() {
                 })
             });
 
-        let distribution = tsv_maps
+        let mut distribution = tsv_maps
             .col_tsvs
             .distribution
             .get(&taxon_tsv_data_raw.dwc_taxon_id)
@@ -178,6 +184,7 @@ fn main() {
                 Some(Distribution {
                     locality: x.dwc_locality.clone(),
                     threat_status,
+                    reference: None,
                 })
             });
 
@@ -197,6 +204,26 @@ fn main() {
             bad_entry_count += 1;
             continue;
         };
+
+        let iucn_data_key = IUCNDataKey {
+            genus: genus_fixed.clone(),
+            specific: specific_checked.clone(),
+            subspecific: taxon_tsv_data_raw.dwc_infraspecific_epithet.clone(),
+        };
+        if let Some(iucn_distribution) = tsv_maps.iucn_data.get(&iucn_data_key) {
+            distribution = match distribution {
+                Some(some) => Some(Distribution {
+                    locality: some.locality,
+                    threat_status: iucn_distribution.threat_status.into_threatstatus(),
+                    reference: Some(iucn_distribution.references.clone()),
+                }),
+                None => Some(Distribution {
+                    locality: None,
+                    threat_status: iucn_distribution.threat_status.into_threatstatus(),
+                    reference: Some(iucn_distribution.references.clone()),
+                }),
+            };
+        }
 
         moth_entries.push(SpeciesData {
             catalogue_of_life_taxon_id: taxon_tsv_data_raw.dwc_taxon_id,

@@ -202,7 +202,7 @@ pub struct IUCNDistributionTXTRaw {
     pub occurrence_status: String,
 }
 
-#[derive(Debug, Deserialize)]
+#[derive(Debug, Deserialize, Clone)]
 pub enum IUCNThreatStatusRaw {
     #[serde(rename = "Least Concern")]
     #[serde(alias = "least concern")]
