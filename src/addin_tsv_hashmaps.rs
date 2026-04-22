@@ -126,9 +126,9 @@ pub fn iucn_hashmaps_combiner(
 
             hashmap.insert(
                 IUCNDataKey {
-                    genus,
-                    specific,
-                    subspecific: taxon_entry.infraspecific_epithet,
+                    genus: genus.to_lowercase(),
+                    specific: specific.to_lowercase(),
+                    subspecific: taxon_entry.infraspecific_epithet.map(|x| x.to_lowercase()),
                 },
                 iucn_data,
             );

@@ -206,9 +206,12 @@ fn main() {
         };
 
         let iucn_data_key = IUCNDataKey {
-            genus: genus_fixed.clone(),
-            specific: specific_checked.clone(),
-            subspecific: taxon_tsv_data_raw.dwc_infraspecific_epithet.clone(),
+            genus: genus_fixed.to_lowercase(),
+            specific: specific_checked.to_lowercase(),
+            subspecific: taxon_tsv_data_raw
+                .dwc_infraspecific_epithet
+                .clone()
+                .map(|x| x.to_lowercase()),
         };
         if let Some(iucn_distribution) = tsv_maps.iucn_data.get(&iucn_data_key) {
             distribution = Some(Distribution {
