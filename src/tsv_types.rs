@@ -344,9 +344,10 @@ pub enum TaxonRank {
     #[serde(alias = "subspecies (plantae)")]
     SubSpecies,
     #[serde(rename = "infraspecific name")]
+    #[serde(alias = "infraspecificEpithet")]
     InfraSpecificName,
     #[serde(rename = "infrasubspecific name")]
-    InfraSubSpecificEpithet,
+    InfraSubSpecificName,
     #[serde(rename = "natio")]
     Natio, // i have no clue what this is but it's below subspecies (https://www.marinespecies.org/copepoda/aphia.php?p=taxdetails&id=363902)
     #[serde(rename = "forma specialis")]
