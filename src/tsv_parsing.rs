@@ -6,36 +6,6 @@ use crate::{
     tsv_types::*,
 };
 
-// header info included in `meta.xml`
-const IUCN_TAXON_TXT_HEADERS: [&str; 15] = [
-    "scientificName",
-    "kingdom",
-    "phylum",
-    "class",
-    "order",
-    "family",
-    "genus",
-    "specificEpithet",
-    "scientificNameAuthorship",
-    "taxonRank",
-    "infraspecificEpithet",
-    "taxonomicStatus",
-    "acceptedNameUsageID",
-    "bibliographicCitation",
-    "references",
-];
-#[allow(unused)]
-const IUCN_VERNACULARNAME_TXT_HEADERS: [&str; 3] =
-    ["isPreferredName", "vernacularName", "language"];
-const IUCN_DISTRIBUTION_TXT_HEADERS: [&str; 6] = [
-    "establishmentMeans",
-    "source",
-    "countryCode",
-    "locality",
-    "threatStatus",
-    "occurrenceStatus",
-];
-
 pub fn parse_tsvs() -> TSVMaps {
     let mut col_vernacular_tsv_reader = csv::ReaderBuilder::new()
         .delimiter(b'\t')
@@ -70,7 +40,6 @@ pub fn parse_tsvs() -> TSVMaps {
         .quoting(false)
         .has_headers(false)
         .from_reader(File::open(format!("{IUCN_DATA_DIR}/taxon.txt")).unwrap());
-    iucn_taxon_tsv_reader.set_headers(csv::StringRecord::from(Vec::from(IUCN_TAXON_TXT_HEADERS)));
     let iucn_taxon_tsv_raw = iucn_taxon_tsv_reader.deserialize::<IUCNTaxonTXTRaw>();
 
     let mut iucn_distribution_tsv_reader = csv::ReaderBuilder::new()
@@ -78,9 +47,6 @@ pub fn parse_tsvs() -> TSVMaps {
         .quoting(false)
         .has_headers(false)
         .from_reader(File::open(format!("{IUCN_DATA_DIR}/distribution.txt")).unwrap());
-    iucn_distribution_tsv_reader.set_headers(csv::StringRecord::from(Vec::from(
-        IUCN_DISTRIBUTION_TXT_HEADERS,
-    )));
     let iucn_distribution_tsv = addin_tsv_hashmaps::iucn_distribution_to_hashmap(
         iucn_distribution_tsv_reader.deserialize::<IUCNDistributionTXTRaw>(),
     );
