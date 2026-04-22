@@ -119,6 +119,7 @@ pub fn iucn_hashmaps_combiner(
                 .expect("IUCN species or subspecies found with no distribution data");
 
             let iucn_data = IUCNData {
+                locality: distribution_data.locality.clone(),
                 references: taxon_entry.references,
                 threat_status: distribution_data.threat_status.clone(),
             };
@@ -141,6 +142,7 @@ pub fn iucn_hashmaps_combiner(
 
 #[derive(Debug)]
 pub struct IUCNData {
+    pub locality: String,
     pub references: String,
     pub threat_status: IUCNThreatStatusRaw,
 }

@@ -211,18 +211,11 @@ fn main() {
             subspecific: taxon_tsv_data_raw.dwc_infraspecific_epithet.clone(),
         };
         if let Some(iucn_distribution) = tsv_maps.iucn_data.get(&iucn_data_key) {
-            distribution = match distribution {
-                Some(some) => Some(Distribution {
-                    locality: some.locality,
-                    threat_status: iucn_distribution.threat_status.into_threatstatus(),
-                    reference: Some(iucn_distribution.references.clone()),
-                }),
-                None => Some(Distribution {
-                    locality: None,
-                    threat_status: iucn_distribution.threat_status.into_threatstatus(),
-                    reference: Some(iucn_distribution.references.clone()),
-                }),
-            };
+            distribution = Some(Distribution {
+                locality: Some(iucn_distribution.locality.clone()),
+                threat_status: iucn_distribution.threat_status.into_threatstatus(),
+                reference: Some(iucn_distribution.references.clone()),
+            });
         }
 
         moth_entries.push(SpeciesData {
