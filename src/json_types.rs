@@ -1,4 +1,7 @@
-use std::collections::{HashMap, HashSet};
+use std::{
+    collections::{HashMap, HashSet},
+    fmt::Display,
+};
 
 use serde::{Deserialize, Serialize};
 
@@ -40,6 +43,25 @@ pub enum ThreatStatus {
     CriticallyEndangered,
     ExtinctInTheWild,
     Extinct,
+}
+
+impl Display for ThreatStatus {
+    fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
+        write!(
+            f,
+            "{}",
+            match self {
+                ThreatStatus::LeastConcern => "Least Concern",
+                ThreatStatus::ConservationDependent => "Conservation Dependent",
+                ThreatStatus::NearThreatened => "Near Threatened",
+                ThreatStatus::Vulnerable => "Vulnerable",
+                ThreatStatus::Endangered => "Endangered",
+                ThreatStatus::CriticallyEndangered => "Critically Endangered",
+                ThreatStatus::ExtinctInTheWild => "Extinct in the Wild",
+                ThreatStatus::Extinct => "Extinct",
+            }
+        )
+    }
 }
 
 #[derive(Debug, Clone, Serialize, Deserialize)]
