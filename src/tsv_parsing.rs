@@ -81,7 +81,7 @@ pub fn parse_tsvs() -> TSVMaps {
     println!("Combining WoRMS data");
     let worms_data = worms_hashmaps_combiner(worms_taxon_tsv_raw, worms_species_profile_tsv);
 
-    return TSVMaps {
+    TSVMaps {
         col_tsvs: CatalogueOfLifeTSVMaps {
             vernacular_name: col_vernacular_tsv,
             species_profile: col_species_profile_tsv,
@@ -89,7 +89,7 @@ pub fn parse_tsvs() -> TSVMaps {
         },
         iucn_data,
         worms_data,
-    };
+    }
 }
 
 pub struct TSVMaps {

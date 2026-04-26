@@ -95,8 +95,8 @@ fn main() {
                 {
                     let synonym = SynonymSpecies {
                         catalogue_of_life_taxon_id: taxon_tsv_data_raw.dwc_taxon_id,
-                        genus: genus,
-                        specific: specific,
+                        genus,
+                        specific,
                         subspecific: taxon_tsv_data_raw.dwc_infraspecific_epithet,
                     };
                     synonyms
@@ -163,12 +163,10 @@ fn main() {
             .col_tsvs
             .species_profile
             .get(&taxon_tsv_data_raw.dwc_taxon_id)
-            .and_then(|x| {
-                Some(SpeciesProfile {
-                    freshwater: x.gbif_is_freshwater,
-                    brackish: None,
-                    marine: x.gbif_is_marine,
-                })
+            .map(|x| SpeciesProfile {
+                freshwater: x.gbif_is_freshwater,
+                brackish: None,
+                marine: x.gbif_is_marine,
             });
 
         let mut distribution = tsv_maps
@@ -179,7 +177,7 @@ fn main() {
                 let threat_status = x
                     .iucn_threat_status
                     .as_ref()
-                    .and_then(|x| x.into_threatstatus());
+                    .and_then(|x| x.copy_into_threatstatus());
                 if x.dwc_locality.is_none() && threat_status.is_none() {
                     return None;
                 }
@@ -218,7 +216,7 @@ fn main() {
         if let Some(iucn_distribution) = tsv_maps.iucn_data.get(&addin_data_key) {
             distribution = Some(Distribution {
                 locality: Some(iucn_distribution.locality.clone()),
-                threat_status: iucn_distribution.threat_status.into_threatstatus(),
+                threat_status: iucn_distribution.threat_status.copy_into_threatstatus(),
                 reference: Some(iucn_distribution.references.clone()),
             });
         }
@@ -248,8 +246,8 @@ fn main() {
                 subspecific: taxon_tsv_data_raw.dwc_infraspecific_epithet,
             },
             common_names: common_name.cloned(),
-            species_profile: species_profile,
-            distribution: distribution,
+            species_profile,
+            distribution,
             synonyms: None,
             subspecies: None,
             published_in: taxon_tsv_data_raw.dwc_name_published_in,
@@ -268,27 +266,27 @@ fn main() {
     for moth_entry in moth_entries.iter_mut() {
         // eliminate any false positives in butterfly blacklist
         // only genera and specifics appear to collide but check over all of them anyways
-        if let Some(family) = &moth_entry.classification.family {
-            if butterfly_data.families.remove(&family.to_lowercase()) {
-                butterfly_collision_data.families.insert(family.clone());
-            }
+        if let Some(family) = &moth_entry.classification.family
+            && butterfly_data.families.remove(&family.to_lowercase())
+        {
+            butterfly_collision_data.families.insert(family.clone());
         }
-        if let Some(subfamily) = &moth_entry.classification.subfamily {
-            if butterfly_data.subfamilies.remove(&subfamily.to_lowercase()) {
-                butterfly_collision_data
-                    .subfamilies
-                    .insert(subfamily.clone());
-            }
+        if let Some(subfamily) = &moth_entry.classification.subfamily
+            && butterfly_data.subfamilies.remove(&subfamily.to_lowercase())
+        {
+            butterfly_collision_data
+                .subfamilies
+                .insert(subfamily.clone());
         }
-        if let Some(tribe) = &moth_entry.classification.tribe {
-            if butterfly_data.tribes.remove(&tribe.to_lowercase()) {
-                butterfly_collision_data.tribes.insert(tribe.clone());
-            }
+        if let Some(tribe) = &moth_entry.classification.tribe
+            && butterfly_data.tribes.remove(&tribe.to_lowercase())
+        {
+            butterfly_collision_data.tribes.insert(tribe.clone());
         }
-        if let Some(subtribe) = &moth_entry.classification.subtribe {
-            if butterfly_data.subtribes.remove(&subtribe.to_lowercase()) {
-                butterfly_collision_data.subtribes.insert(subtribe.clone());
-            }
+        if let Some(subtribe) = &moth_entry.classification.subtribe
+            && butterfly_data.subtribes.remove(&subtribe.to_lowercase())
+        {
+            butterfly_collision_data.subtribes.insert(subtribe.clone());
         }
         if butterfly_data
             .genera
@@ -306,15 +304,14 @@ fn main() {
                 .specifics
                 .insert(moth_entry.classification.specific.clone());
         }
-        if let Some(subspecific) = &moth_entry.classification.subspecific {
-            if butterfly_data
+        if let Some(subspecific) = &moth_entry.classification.subspecific
+            && butterfly_data
                 .subspecifics
                 .remove(&subspecific.to_lowercase())
-            {
-                butterfly_collision_data
-                    .subspecifics
-                    .insert(subspecific.clone());
-            }
+        {
+            butterfly_collision_data
+                .subspecifics
+                .insert(subspecific.clone());
         }
 
         // append synonyms
@@ -440,7 +437,7 @@ fn get_reversed_synonym_map(synonyms: &HashMap<String, Vec<SynonymSpecies>>) -> 
             );
         }
     }
-    return new_synonyms;
+    new_synonyms
 }
 
 fn write_zstd(input_file_path: &str, mut output_file: &File) -> Result<(), Box<dyn Error>> {
@@ -449,7 +446,7 @@ fn write_zstd(input_file_path: &str, mut output_file: &File) -> Result<(), Box<d
 
     let max_compression_level = *zstd::compression_level_range().end();
     let mut compressor = zstd::bulk::Compressor::new(max_compression_level)?;
-    output_file.write(&compressor.compress(&compression_target_data)?)?;
+    output_file.write_all(&compressor.compress(&compression_target_data)?)?;
 
-    return Ok(());
+    Ok(())
 }

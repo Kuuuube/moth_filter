@@ -31,7 +31,7 @@ pub fn col_vernacular_to_hashmap(
     if errors > 0 {
         println!("col_vernacular_to_hashmap bad rows: {errors}");
     }
-    return hashmap;
+    hashmap
 }
 
 pub fn col_species_profile_to_hashmap(
@@ -49,7 +49,7 @@ pub fn col_species_profile_to_hashmap(
     if errors > 0 {
         println!("col_species_profile_to_hashmap bad rows: {errors}");
     }
-    return hashmap;
+    hashmap
 }
 
 pub fn col_distribution_to_hashmap(
@@ -67,7 +67,7 @@ pub fn col_distribution_to_hashmap(
     if errors > 0 {
         println!("col_distribution_to_hashmap bad rows: {errors}");
     }
-    return hashmap;
+    hashmap
 }
 
 pub fn iucn_distribution_to_hashmap(
@@ -85,7 +85,7 @@ pub fn iucn_distribution_to_hashmap(
     if errors > 0 {
         println!("iucn_distribution_to_hashmap bad rows: {errors}");
     }
-    return hashmap;
+    hashmap
 }
 
 pub fn iucn_hashmaps_combiner(
@@ -148,7 +148,7 @@ pub fn iucn_hashmaps_combiner(
     if errors > 0 {
         println!("iucn_hashmaps_combiner bad rows: {errors}");
     }
-    return hashmap;
+    hashmap
 }
 
 #[derive(Debug)]
@@ -173,7 +173,7 @@ pub fn worms_species_profile_to_hashmap(
     if errors > 0 {
         println!("worms_species_profile_to_hashmap bad rows: {errors}");
     }
-    return hashmap;
+    hashmap
 }
 
 pub fn worms_hashmaps_combiner(
@@ -238,7 +238,7 @@ pub fn worms_hashmaps_combiner(
     if errors > 0 {
         println!("worms_hashmaps_combiner bad rows: {errors}");
     }
-    return hashmap;
+    hashmap
 }
 
 #[derive(Debug)]

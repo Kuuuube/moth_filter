@@ -237,7 +237,7 @@ pub enum IUCNThreatStatusRaw {
 }
 
 impl IUCNThreatStatusRaw {
-    pub fn into_threatstatus(&self) -> Option<ThreatStatus> {
+    pub fn copy_into_threatstatus(&self) -> Option<ThreatStatus> {
         match self {
             IUCNThreatStatusRaw::LeastConcern => Some(ThreatStatus::LeastConcern),
             IUCNThreatStatusRaw::ConservationDependent => Some(ThreatStatus::ConservationDependent),
