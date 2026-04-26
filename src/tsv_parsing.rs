@@ -1,8 +1,11 @@
 use std::{collections::HashMap, fs::File};
 
 use crate::{
-    CATALOGUE_OF_LIFE_DATA_DIR, IUCN_DATA_DIR,
-    addin_tsv_hashmaps::{self, IUCNData, IUCNDataKey, VernacularHashKey, iucn_hashmaps_combiner},
+    CATALOGUE_OF_LIFE_DATA_DIR, IUCN_DATA_DIR, WORMS_DATA_DIR,
+    addin_tsv_hashmaps::{
+        self, AddinDataKey, IUCNData, VernacularHashKey, WORMSData, iucn_hashmaps_combiner,
+        worms_hashmaps_combiner,
+    },
     tsv_types::*,
 };
 
@@ -53,19 +56,37 @@ pub fn parse_tsvs() -> TSVMaps {
 
     let iucn_data = iucn_hashmaps_combiner(iucn_taxon_tsv_raw, iucn_distribution_tsv);
 
+    let mut worms_taxon_tsv_reader = csv::ReaderBuilder::new()
+        .delimiter(b'\t')
+        .quoting(false)
+        .from_reader(File::open(format!("{WORMS_DATA_DIR}/taxon.txt")).unwrap());
+    let worms_taxon_tsv_raw = worms_taxon_tsv_reader.deserialize::<WORMSTaxonTXTRaw>();
+
+    let mut worms_species_profile_tsv_reader = csv::ReaderBuilder::new()
+        .delimiter(b'\t')
+        .quoting(false)
+        .from_reader(File::open(format!("{WORMS_DATA_DIR}/speciesprofile.txt")).unwrap());
+    let worms_species_profile_tsv = addin_tsv_hashmaps::worms_species_profile_to_hashmap(
+        worms_species_profile_tsv_reader.deserialize::<WORMSSpeciesProfileTXTRaw>(),
+    );
+
+    let worms_data = worms_hashmaps_combiner(worms_taxon_tsv_raw, worms_species_profile_tsv);
+
     return TSVMaps {
         col_tsvs: CatalogueOfLifeTSVMaps {
             vernacular_name: col_vernacular_tsv,
             species_profile: col_species_profile_tsv,
             distribution: col_distribution_tsv,
         },
-        iucn_data: iucn_data,
+        iucn_data,
+        worms_data,
     };
 }
 
 pub struct TSVMaps {
     pub col_tsvs: CatalogueOfLifeTSVMaps,
-    pub iucn_data: HashMap<IUCNDataKey, IUCNData>,
+    pub iucn_data: HashMap<AddinDataKey, IUCNData>,
+    pub worms_data: HashMap<AddinDataKey, WORMSData>,
 }
 
 pub struct CatalogueOfLifeTSVMaps {

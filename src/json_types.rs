@@ -66,11 +66,11 @@ impl Display for ThreatStatus {
 
 #[derive(Debug, Clone, Serialize, Deserialize)]
 pub struct SpeciesProfile {
-    #[serde(skip_serializing_if = "Option::is_none")]
-    pub extinct: Option<bool>,
     // yep, aquatic moths are a thing though this database doesn't have many of them identified
     #[serde(skip_serializing_if = "Option::is_none")]
     pub freshwater: Option<bool>,
+    #[serde(skip_serializing_if = "Option::is_none")]
+    pub brackish: Option<bool>,
     #[serde(skip_serializing_if = "Option::is_none")]
     pub marine: Option<bool>,
 }

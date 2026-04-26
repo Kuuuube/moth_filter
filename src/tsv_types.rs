@@ -253,127 +253,258 @@ impl IUCNThreatStatusRaw {
     }
 }
 
-#[derive(Debug, Deserialize, PartialEq)]
+#[derive(Debug, Deserialize, PartialEq, Clone)]
 pub enum TaxonRank {
-    #[serde(rename = "domain")]
+    #[serde(alias = "domain")]
     Domain,
-    #[serde(rename = "realm")]
+    #[serde(alias = "realm")]
     Realm,
-    #[serde(rename = "kingdom")]
+    #[serde(alias = "kingdom")]
     Kingdom,
-    #[serde(rename = "subkingdom")]
+    #[serde(alias = "Subkingdom")]
+    #[serde(alias = "subkingdom")]
     SubKingdom,
-    #[serde(rename = "infrakingdom")]
+    #[serde(alias = "Infrakingdom")]
+    #[serde(alias = "infrakingdom")]
     InfraKingdom,
-    #[serde(rename = "phylum")]
+    #[serde(alias = "Superphylum")]
+    SuperPhylum,
+    #[serde(alias = "Phylum (Division)")]
+    #[serde(alias = "phylum")]
     Phylum,
-    #[serde(rename = "subphylum")]
+    #[serde(alias = "Subphylum (Subdivision)")]
+    #[serde(alias = "Subphylum")]
+    #[serde(alias = "subphylum")]
     SubPhylum,
-    #[serde(rename = "infraphylum")]
+    #[serde(alias = "Infraphylum")]
+    #[serde(alias = "infraphylum")]
     InfraPhylum,
-    #[serde(rename = "parvphylum")]
+    #[serde(alias = "Parvphylum")]
+    #[serde(alias = "parvphylum")]
     ParvPhylum,
-    #[serde(rename = "gigaclass")]
+    #[serde(alias = "Gigaclass")]
+    #[serde(alias = "gigaclass")]
     GigaClass,
-    #[serde(rename = "megaclass")]
+    #[serde(alias = "Megaclass")]
+    #[serde(alias = "megaclass")]
     MegaClass,
-    #[serde(rename = "superclass")]
+    #[serde(alias = "Superclass")]
+    #[serde(alias = "superclass")]
     SuperClass,
-    #[serde(rename = "class")]
+    #[serde(alias = "class")]
     Class,
-    #[serde(rename = "superorder")]
-    SuperOrder,
-    #[serde(rename = "subclass")]
+    #[serde(alias = "Subclass")]
+    #[serde(alias = "subclass")]
     SubClass,
-    #[serde(rename = "infraclass")]
+    #[serde(alias = "Infraclass")]
+    #[serde(alias = "infraclass")]
     InfraClass,
-    #[serde(rename = "subterclass")]
+    #[serde(alias = "Subterclass")]
+    #[serde(alias = "subterclass")]
     SubterClass,
-    #[serde(rename = "order")]
+    #[serde(alias = "Superorder")]
+    #[serde(alias = "superorder")]
+    SuperOrder,
+    #[serde(alias = "order")]
     Order,
-    #[serde(rename = "suborder")]
+    #[serde(alias = "Suborder")]
+    #[serde(alias = "suborder")]
     SubOrder,
-    #[serde(rename = "infraorder")]
+    #[serde(alias = "Infraorder")]
+    #[serde(alias = "infraorder")]
     InfraOrder,
-    #[serde(rename = "parvorder")]
+    #[serde(alias = "Parvorder")]
+    #[serde(alias = "parvorder")]
     ParvOrder,
-    #[serde(rename = "nanorder")]
+    #[serde(alias = "nanorder")]
     NanOrder,
-    #[serde(rename = "superfamily")]
+    #[serde(alias = "Superfamily")]
+    #[serde(alias = "superfamily")]
     SuperFamily,
-    #[serde(rename = "family")]
+    #[serde(alias = "family")]
     Family,
-    #[serde(rename = "epifamily")]
+    #[serde(alias = "Epifamily")]
+    #[serde(alias = "epifamily")]
     EpiFamily,
-    #[serde(rename = "subfamily")]
+    #[serde(alias = "Subfamily")]
+    #[serde(alias = "subfamily")]
     SubFamily,
-    #[serde(rename = "infrafamily")]
+    #[serde(alias = "Infrafamily")]
+    #[serde(alias = "infrafamily")]
     InfraFamily,
-    #[serde(rename = "supertribe")]
+    #[serde(alias = "Supertribe")]
+    #[serde(alias = "supertribe")]
     SuperTribe,
-    #[serde(rename = "tribe")]
+    #[serde(alias = "tribe")]
     Tribe,
-    #[serde(rename = "subtribe")]
+    #[serde(alias = "Subtribe")]
+    #[serde(alias = "subtribe")]
     SubTribe,
-    #[serde(rename = "infratribe")]
+    #[serde(alias = "Infratribe")]
+    #[serde(alias = "infratribe")]
     InfraTribe,
-    #[serde(rename = "genus")]
+    #[serde(alias = "genus")]
     #[serde(alias = "infrageneric name")]
     Genus,
-    #[serde(rename = "infragenus")]
+    #[serde(alias = "Infragenus")]
+    #[serde(alias = "infragenus")]
     InfraGenus,
-    #[serde(rename = "subgenus")]
+    #[serde(alias = "Subgenus")]
+    #[serde(alias = "subgenus")]
     SubGenus,
-    #[serde(rename = "section")]
+    #[serde(alias = "section")]
     #[serde(alias = "section botany")]
     #[serde(alias = "section zoology")]
     Section,
-    #[serde(rename = "subsection")]
+    #[serde(alias = "Subsection")]
+    #[serde(alias = "subsection")]
     #[serde(alias = "subsection botany")]
     #[serde(alias = "subsection zoology")]
     SubSection,
-    #[serde(rename = "series")]
+    #[serde(alias = "series")]
     Series,
-    #[serde(rename = "subseries")]
+    #[serde(alias = "Subseries")]
+    #[serde(alias = "subseries")]
     SubSeries,
-    #[serde(rename = "species aggregate")]
+    #[serde(alias = "Coll. sp.")] // Collective species
+    #[serde(alias = "Aggr.")] // Aggregate species
+    #[serde(alias = "species aggregate")]
     SuperSpecies,
-    #[serde(rename = "species")]
+    #[serde(alias = "species")]
     Species,
-    #[serde(rename = "subspecies")]
+    #[serde(alias = "Subspecies")]
+    #[serde(alias = "subspecies")]
     #[serde(alias = "subspecies (plantae)")]
     SubSpecies,
-    #[serde(rename = "infraspecific name")]
+    #[serde(alias = "infraspecific name")]
     #[serde(alias = "infraspecificEpithet")]
     InfraSpecificName,
-    #[serde(rename = "infrasubspecific name")]
+    #[serde(alias = "infrasubspecific name")]
     InfraSubSpecificName,
-    #[serde(rename = "natio")]
+    #[serde(alias = "natio")]
     Natio, // i have no clue what this is but it's below subspecies (https://www.marinespecies.org/copepoda/aphia.php?p=taxdetails&id=363902)
-    #[serde(rename = "forma specialis")]
+    #[serde(alias = "forma specialis")]
     FormaSpecialis, // not necessarily above or below subspecies
-    #[serde(rename = "variety")]
+    #[serde(alias = "variety")]
     Variety,
-    #[serde(rename = "subvariety")]
+    #[serde(alias = "Subvariety")]
+    #[serde(alias = "subvariety")]
     SubVariety,
-    #[serde(rename = "form")]
+    #[serde(alias = "form")]
+    #[serde(alias = "Forma")]
     Form,
-    #[serde(rename = "morph")]
+    #[serde(alias = "morph")]
     Morph,
-    #[serde(rename = "subform")]
+    #[serde(alias = "Subforma")]
+    #[serde(alias = "subform")]
     SubForm,
-    #[serde(rename = "aberration")]
+    #[serde(alias = "aberration")]
     Aberration,
-    #[serde(rename = "race")]
+    #[serde(alias = "race")]
     #[serde(alias = "proles")]
     Race,
-    #[serde(rename = "mutation")]
+    #[serde(alias = "mutation")]
+    #[serde(alias = "Mutatio")]
     #[serde(alias = "mutatio")]
     Mutation,
-    #[serde(rename = "unrankedsynonym")]
+    #[serde(alias = "unrankedsynonym")]
     #[serde(alias = "lusus")]
     UnrankedSynonym,
-    #[serde(rename = "unranked")]
+    #[serde(alias = "unranked")]
     #[serde(alias = "other")]
     Unranked,
+}
+
+#[derive(Debug, Deserialize, Clone)]
+#[allow(unused)]
+pub struct WORMSTaxonTXTRaw {
+    #[serde(rename = "taxonID")]
+    pub taxon_id: String,
+    #[serde(rename = "scientificNameID")]
+    pub scientific_name_id: String,
+    #[serde(rename = "acceptedNameUsageID")]
+    pub accepted_name_usage_id: String,
+    #[serde(rename = "parentNameUsageID")]
+    pub parent_name_usage_id: String,
+    #[serde(rename = "namePublishedInID")]
+    pub name_published_in_id: String,
+    #[serde(rename = "scientificName")]
+    pub scientific_name: String,
+    #[serde(rename = "acceptedNameUsage")]
+    pub accepted_name_usage: String,
+    #[serde(rename = "parentNameUsage")]
+    pub parent_name_usage: String,
+    #[serde(rename = "namePublishedIn")]
+    pub name_published_in: String,
+    #[serde(rename = "namePublishedInYear")]
+    pub name_published_in_year: String,
+    pub kingdom: Option<String>,
+    pub phylum: Option<String>,
+    pub class: Option<String>,
+    pub order: Option<String>,
+    pub family: Option<String>,
+    pub genus: Option<String>,
+    pub subgenus: Option<String>,
+    #[serde(rename = "specificEpithet")]
+    pub specific_epithet: Option<String>,
+    #[serde(rename = "infraspecificEpithet")]
+    pub infraspecific_epithet: Option<String>,
+    #[serde(rename = "taxonRank")]
+    pub taxon_rank: Option<TaxonRank>,
+    #[serde(rename = "scientificNameAuthorship")]
+    pub scientific_name_authorship: String,
+    #[serde(rename = "nomenclaturalCode")]
+    pub nomenclatural_code: String,
+    #[serde(rename = "taxonomicStatus")]
+    pub taxonomic_status: String,
+    #[serde(rename = "nomenclaturalStatus")]
+    pub nomenclatural_status: String,
+    pub modified: String,
+    #[serde(rename = "bibliographicCitation")]
+    pub bibliographic_citation: String,
+    pub references: String,
+    pub license: String,
+    #[serde(rename = "rightsHolder")]
+    pub rights_holder: String,
+    #[serde(rename = "datasetName")]
+    pub dataset_name: String,
+    #[serde(rename = "institutionCode")]
+    pub institution_code: String,
+    #[serde(rename = "datasetID")]
+    pub dataset_id: String,
+}
+
+#[derive(Debug, Deserialize)]
+#[allow(unused)]
+pub struct WORMSSpeciesProfileTXTRaw {
+    #[serde(rename = "taxonID")]
+    pub taxon_id: String,
+    #[serde(rename = "isMarine")]
+    #[serde(deserialize_with = "string_int_as_bool")]
+    pub is_marine: Option<bool>,
+    #[serde(rename = "isFreshwater")]
+    #[serde(deserialize_with = "string_int_as_bool")]
+    pub is_freshwater: Option<bool>,
+    #[serde(rename = "isTerrestrial")]
+    #[serde(deserialize_with = "string_int_as_bool")]
+    pub is_terrestrial: Option<bool>,
+    #[serde(rename = "isExtinct")]
+    #[serde(deserialize_with = "string_int_as_bool")]
+    pub is_extinct: Option<bool>,
+    #[serde(rename = "isBrackish")]
+    #[serde(deserialize_with = "string_int_as_bool")]
+    pub is_brackish: Option<bool>,
+}
+
+fn string_int_as_bool<'de, D>(deserializer: D) -> Result<Option<bool>, D::Error>
+where
+    D: serde::de::Deserializer<'de>,
+{
+    let s: &str = serde::de::Deserialize::deserialize(deserializer)?;
+    match s {
+        "" => Ok(None),
+        "0" => Ok(Some(false)),
+        "1" => Ok(Some(true)),
+        _ => Err(serde::de::Error::unknown_variant(s, &["0", "1"])),
+    }
 }

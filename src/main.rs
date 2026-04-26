@@ -7,7 +7,7 @@ use std::{
 };
 
 use crate::{
-    addin_tsv_hashmaps::{IUCNDataKey, VernacularHashKey},
+    addin_tsv_hashmaps::{AddinDataKey, VernacularHashKey},
     json_types::*,
     tsv_types::*,
 };
@@ -22,6 +22,7 @@ const BUTTERFLY_SUPERFAMILY: &str = "Papilionoidea";
 
 const CATALOGUE_OF_LIFE_DATA_DIR: &str = "./data/col";
 const IUCN_DATA_DIR: &str = "./data/iucn";
+const WORMS_DATA_DIR: &str = "./data/worms";
 
 fn main() {
     let start_time = Instant::now();
@@ -32,8 +33,10 @@ fn main() {
         .from_reader(File::open(format!("{CATALOGUE_OF_LIFE_DATA_DIR}/Taxon.tsv")).unwrap());
     let taxon_tsv = taxon_tsv_reader.deserialize::<COLTaxonTSVRaw>();
 
+    println!("Processing supplemental data");
     let tsv_maps = tsv_parsing::parse_tsvs();
 
+    println!("Processing main data");
     let mut bad_entry_count = 0;
     let mut moth_entries: Vec<SpeciesData> = Vec::new();
     let mut synonyms: HashMap<String, Vec<SynonymSpecies>> = HashMap::new();
@@ -157,14 +160,14 @@ fn main() {
             language_code: "eng".to_string(),
             taxon_id: taxon_tsv_data_raw.dwc_taxon_id.clone(),
         });
-        let species_profile = tsv_maps
+        let mut species_profile = tsv_maps
             .col_tsvs
             .species_profile
             .get(&taxon_tsv_data_raw.dwc_taxon_id)
             .and_then(|x| {
                 Some(SpeciesProfile {
-                    extinct: x.gbif_is_extinct,
                     freshwater: x.gbif_is_freshwater,
+                    brackish: None,
                     marine: x.gbif_is_marine,
                 })
             });
@@ -205,7 +208,7 @@ fn main() {
             continue;
         };
 
-        let iucn_data_key = IUCNDataKey {
+        let addin_data_key = AddinDataKey {
             genus: genus_fixed.to_lowercase(),
             specific: specific_checked.to_lowercase(),
             subspecific: taxon_tsv_data_raw
@@ -213,12 +216,24 @@ fn main() {
                 .clone()
                 .map(|x| x.to_lowercase()),
         };
-        if let Some(iucn_distribution) = tsv_maps.iucn_data.get(&iucn_data_key) {
+        if let Some(iucn_distribution) = tsv_maps.iucn_data.get(&addin_data_key) {
             distribution = Some(Distribution {
                 locality: Some(iucn_distribution.locality.clone()),
                 threat_status: iucn_distribution.threat_status.into_threatstatus(),
                 reference: Some(iucn_distribution.references.clone()),
             });
+        }
+        if let Some(worms_species_profile) = tsv_maps.worms_data.get(&addin_data_key) {
+            species_profile = Some(SpeciesProfile {
+                freshwater: worms_species_profile.is_freshwater,
+                brackish: worms_species_profile.is_brackish,
+                marine: worms_species_profile.is_marine,
+            })
+            // distribution = Some(Distribution {
+            //     locality: Some(iucn_distribution.locality.clone()),
+            //     threat_status: iucn_distribution.threat_status.into_threatstatus(),
+            //     reference: Some(iucn_distribution.references.clone()),
+            // });
         }
 
         moth_entries.push(SpeciesData {
