@@ -10,6 +10,7 @@ use crate::{
 };
 
 pub fn parse_tsvs() -> TSVMaps {
+    println!("Parsing Catalogue of Life vernacular");
     let mut col_vernacular_tsv_reader = csv::ReaderBuilder::new()
         .delimiter(b'\t')
         .quoting(false)
@@ -20,6 +21,7 @@ pub fn parse_tsvs() -> TSVMaps {
         col_vernacular_tsv_reader.deserialize::<COLVernacularNameTSVRaw>(),
     );
 
+    println!("Parsing Catalogue of Life species profiles");
     let mut col_species_profile_tsv_reader = csv::ReaderBuilder::new()
         .delimiter(b'\t')
         .quoting(false)
@@ -30,6 +32,7 @@ pub fn parse_tsvs() -> TSVMaps {
         col_species_profile_tsv_reader.deserialize::<COLSpeciesProfileTSVRaw>(),
     );
 
+    println!("Parsing Catalogue of Life distribution");
     let mut col_distribution_tsv_reader = csv::ReaderBuilder::new()
         .delimiter(b'\t')
         .quoting(false)
@@ -38,6 +41,7 @@ pub fn parse_tsvs() -> TSVMaps {
         col_distribution_tsv_reader.deserialize::<COLDistributionTSVRaw>(),
     );
 
+    println!("Parsing IUCN Redlist taxon");
     let mut iucn_taxon_tsv_reader = csv::ReaderBuilder::new()
         .delimiter(b'\t')
         .quoting(false)
@@ -45,6 +49,7 @@ pub fn parse_tsvs() -> TSVMaps {
         .from_reader(File::open(format!("{IUCN_DATA_DIR}/taxon.txt")).unwrap());
     let iucn_taxon_tsv_raw = iucn_taxon_tsv_reader.deserialize::<IUCNTaxonTXTRaw>();
 
+    println!("Parsing IUCN Redlist distribution");
     let mut iucn_distribution_tsv_reader = csv::ReaderBuilder::new()
         .delimiter(b'\t')
         .quoting(false)
@@ -54,14 +59,17 @@ pub fn parse_tsvs() -> TSVMaps {
         iucn_distribution_tsv_reader.deserialize::<IUCNDistributionTXTRaw>(),
     );
 
+    println!("Combining IUCN Redlist data");
     let iucn_data = iucn_hashmaps_combiner(iucn_taxon_tsv_raw, iucn_distribution_tsv);
 
+    println!("Parsing WoRMS taxon");
     let mut worms_taxon_tsv_reader = csv::ReaderBuilder::new()
         .delimiter(b'\t')
         .quoting(false)
         .from_reader(File::open(format!("{WORMS_DATA_DIR}/taxon.txt")).unwrap());
     let worms_taxon_tsv_raw = worms_taxon_tsv_reader.deserialize::<WORMSTaxonTXTRaw>();
 
+    println!("Parsing WoRMS species profiles");
     let mut worms_species_profile_tsv_reader = csv::ReaderBuilder::new()
         .delimiter(b'\t')
         .quoting(false)
@@ -70,6 +78,7 @@ pub fn parse_tsvs() -> TSVMaps {
         worms_species_profile_tsv_reader.deserialize::<WORMSSpeciesProfileTXTRaw>(),
     );
 
+    println!("Combining WoRMS data");
     let worms_data = worms_hashmaps_combiner(worms_taxon_tsv_raw, worms_species_profile_tsv);
 
     return TSVMaps {

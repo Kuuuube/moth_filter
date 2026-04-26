@@ -33,10 +33,9 @@ fn main() {
         .from_reader(File::open(format!("{CATALOGUE_OF_LIFE_DATA_DIR}/Taxon.tsv")).unwrap());
     let taxon_tsv = taxon_tsv_reader.deserialize::<COLTaxonTSVRaw>();
 
-    println!("Processing supplemental data");
     let tsv_maps = tsv_parsing::parse_tsvs();
 
-    println!("Processing main data");
+    println!("Processing Catalogue of Life taxon");
     let mut bad_entry_count = 0;
     let mut moth_entries: Vec<SpeciesData> = Vec::new();
     let mut synonyms: HashMap<String, Vec<SynonymSpecies>> = HashMap::new();
@@ -256,6 +255,8 @@ fn main() {
             published_in: taxon_tsv_data_raw.dwc_name_published_in,
         });
     }
+
+    println!("Combining and formatting moth data");
 
     synonyms.retain(|key, _value| moth_ids.contains(key));
     subspecies_map.retain(|key, _value| moth_ids.contains(key));
