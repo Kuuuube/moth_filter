@@ -158,6 +158,7 @@ pub struct IUCNData {
     pub threat_status: IUCNThreatStatusRaw,
 }
 
+#[allow(unused)]
 pub fn worms_species_profile_to_hashmap(
     tsv_iter: csv::DeserializeRecordsIter<'_, File, WORMSSpeciesProfileTXTRaw>,
 ) -> HashMap<String, WORMSSpeciesProfileTXTRaw> {
@@ -176,6 +177,7 @@ pub fn worms_species_profile_to_hashmap(
     hashmap
 }
 
+#[allow(unused)]
 pub fn worms_hashmaps_combiner(
     taxon_tsv: csv::DeserializeRecordsIter<'_, File, WORMSTaxonTXTRaw>,
     species_profiles: HashMap<String, WORMSSpeciesProfileTXTRaw>,
@@ -242,6 +244,7 @@ pub fn worms_hashmaps_combiner(
 }
 
 #[derive(Debug)]
+#[allow(unused)]
 pub struct WORMSData {
     pub is_marine: Option<bool>,
     pub is_freshwater: Option<bool>,

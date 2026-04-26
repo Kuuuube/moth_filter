@@ -22,7 +22,7 @@ const BUTTERFLY_SUPERFAMILY: &str = "Papilionoidea";
 
 const CATALOGUE_OF_LIFE_DATA_DIR: &str = "./data/col";
 const IUCN_DATA_DIR: &str = "./data/iucn";
-const WORMS_DATA_DIR: &str = "./data/worms";
+// const WORMS_DATA_DIR: &str = "./data/worms";
 
 fn main() {
     let start_time = Instant::now();
@@ -159,7 +159,7 @@ fn main() {
             language_code: "eng".to_string(),
             taxon_id: taxon_tsv_data_raw.dwc_taxon_id.clone(),
         });
-        let mut species_profile = tsv_maps
+        let species_profile = tsv_maps
             .col_tsvs
             .species_profile
             .get(&taxon_tsv_data_raw.dwc_taxon_id)
@@ -220,18 +220,13 @@ fn main() {
                 reference: Some(iucn_distribution.references.clone()),
             });
         }
-        if let Some(worms_species_profile) = tsv_maps.worms_data.get(&addin_data_key) {
-            species_profile = Some(SpeciesProfile {
-                freshwater: worms_species_profile.is_freshwater,
-                brackish: worms_species_profile.is_brackish,
-                marine: worms_species_profile.is_marine,
-            })
-            // distribution = Some(Distribution {
-            //     locality: Some(iucn_distribution.locality.clone()),
-            //     threat_status: iucn_distribution.threat_status.into_threatstatus(),
-            //     reference: Some(iucn_distribution.references.clone()),
-            // });
-        }
+        // if let Some(worms_species_profile) = tsv_maps.worms_data.get(&addin_data_key) {
+        //     species_profile = Some(SpeciesProfile {
+        //         freshwater: worms_species_profile.is_freshwater,
+        //         brackish: worms_species_profile.is_brackish,
+        //         marine: worms_species_profile.is_marine,
+        //     })
+        // }
 
         moth_entries.push(SpeciesData {
             catalogue_of_life_taxon_id: taxon_tsv_data_raw.dwc_taxon_id,

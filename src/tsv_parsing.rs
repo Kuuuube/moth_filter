@@ -1,10 +1,9 @@
 use std::{collections::HashMap, fs::File};
 
 use crate::{
-    CATALOGUE_OF_LIFE_DATA_DIR, IUCN_DATA_DIR, WORMS_DATA_DIR,
+    CATALOGUE_OF_LIFE_DATA_DIR, IUCN_DATA_DIR,
     addin_tsv_hashmaps::{
-        self, AddinDataKey, IUCNData, VernacularHashKey, WORMSData, iucn_hashmaps_combiner,
-        worms_hashmaps_combiner,
+        self, AddinDataKey, IUCNData, VernacularHashKey, iucn_hashmaps_combiner,
     },
     tsv_types::*,
 };
@@ -62,24 +61,24 @@ pub fn parse_tsvs() -> TSVMaps {
     println!("Combining IUCN Redlist data");
     let iucn_data = iucn_hashmaps_combiner(iucn_taxon_tsv_raw, iucn_distribution_tsv);
 
-    println!("Parsing WoRMS taxon");
-    let mut worms_taxon_tsv_reader = csv::ReaderBuilder::new()
-        .delimiter(b'\t')
-        .quoting(false)
-        .from_reader(File::open(format!("{WORMS_DATA_DIR}/taxon.txt")).unwrap());
-    let worms_taxon_tsv_raw = worms_taxon_tsv_reader.deserialize::<WORMSTaxonTXTRaw>();
+    // println!("Parsing WoRMS taxon");
+    // let mut worms_taxon_tsv_reader = csv::ReaderBuilder::new()
+    //     .delimiter(b'\t')
+    //     .quoting(false)
+    //     .from_reader(File::open(format!("{WORMS_DATA_DIR}/taxon.txt")).unwrap());
+    // let worms_taxon_tsv_raw = worms_taxon_tsv_reader.deserialize::<WORMSTaxonTXTRaw>();
 
-    println!("Parsing WoRMS species profiles");
-    let mut worms_species_profile_tsv_reader = csv::ReaderBuilder::new()
-        .delimiter(b'\t')
-        .quoting(false)
-        .from_reader(File::open(format!("{WORMS_DATA_DIR}/speciesprofile.txt")).unwrap());
-    let worms_species_profile_tsv = addin_tsv_hashmaps::worms_species_profile_to_hashmap(
-        worms_species_profile_tsv_reader.deserialize::<WORMSSpeciesProfileTXTRaw>(),
-    );
+    // println!("Parsing WoRMS species profiles");
+    // let mut worms_species_profile_tsv_reader = csv::ReaderBuilder::new()
+    //     .delimiter(b'\t')
+    //     .quoting(false)
+    //     .from_reader(File::open(format!("{WORMS_DATA_DIR}/speciesprofile.txt")).unwrap());
+    // let worms_species_profile_tsv = addin_tsv_hashmaps::worms_species_profile_to_hashmap(
+    //     worms_species_profile_tsv_reader.deserialize::<WORMSSpeciesProfileTXTRaw>(),
+    // );
 
-    println!("Combining WoRMS data");
-    let worms_data = worms_hashmaps_combiner(worms_taxon_tsv_raw, worms_species_profile_tsv);
+    // println!("Combining WoRMS data");
+    // let worms_data = worms_hashmaps_combiner(worms_taxon_tsv_raw, worms_species_profile_tsv);
 
     TSVMaps {
         col_tsvs: CatalogueOfLifeTSVMaps {
@@ -88,14 +87,14 @@ pub fn parse_tsvs() -> TSVMaps {
             distribution: col_distribution_tsv,
         },
         iucn_data,
-        worms_data,
+        // worms_data,
     }
 }
 
 pub struct TSVMaps {
     pub col_tsvs: CatalogueOfLifeTSVMaps,
     pub iucn_data: HashMap<AddinDataKey, IUCNData>,
-    pub worms_data: HashMap<AddinDataKey, WORMSData>,
+    // pub worms_data: HashMap<AddinDataKey, WORMSData>,
 }
 
 pub struct CatalogueOfLifeTSVMaps {
